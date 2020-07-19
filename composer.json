@@ -40,7 +40,8 @@
     "fastybird/json-schemas" : "^0.2",
     "nette/bootstrap" : "^3.0",
     "nette/di" : "^3.0",
-    "nette/utils" : "^3.0"
+    "nette/utils" : "^3.0",
+    "psr/log" : "^1.1"
   },
 
   "require-dev" : {
