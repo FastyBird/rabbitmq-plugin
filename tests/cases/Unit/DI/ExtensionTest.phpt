@@ -32,5 +32,5 @@ final class ExtensionTest extends BaseTestCase
 
 }
 
-$test_case = new ServicesTest();
+$test_case = new ExtensionTest();
 $test_case->run();
