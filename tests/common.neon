@@ -10,6 +10,9 @@
 #
 # @date			19.07.20
 
+php:
+	date.timezone: Europe/Prague
+
 extensions:
 	fbJsonSchema		: FastyBird\JsonSchemas\DI\JsonSchemasExtension
 	fbDateTimeFactory	: FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension

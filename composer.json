@@ -1,16 +1,16 @@
 {
   "name" : "fastybird/node-exchange",
   "type" : "library",
-  "description" : "FastyBird node data exchange",
+  "description" : "FastyBird data exchange for nodes",
   "keywords" : [
     "fastybird",
     "fb",
     "libs",
+    "library",
     "exchange",
     "messages",
     "queue",
-    "rabbit",
-    "library"
+    "rabbit"
   ],
 
   "homepage" : "https://www.fastybird.com",
