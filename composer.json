@@ -34,13 +34,13 @@
   "minimum-stability" : "dev",
 
   "require" : {
-    "php": ">=7.3.0",
-    "bunny/bunny": "^0.4",
-    "fastybird/datetime-factory": "^0.1",
-    "fastybird/json-schemas": "^0.2",
-    "nette/bootstrap": "^3.0",
-    "nette/di": "^3.0",
-    "nette/utils": "^3.0"
+    "php" : ">=7.3.0",
+    "bunny/bunny" : "^0.4",
+    "fastybird/datetime-factory" : "^0.1",
+    "fastybird/json-schemas" : "^0.2",
+    "nette/bootstrap" : "^3.0",
+    "nette/di" : "^3.0",
+    "nette/utils" : "^3.0"
   },
 
   "require-dev" : {

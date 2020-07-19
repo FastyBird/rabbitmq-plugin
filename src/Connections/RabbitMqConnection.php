@@ -66,7 +66,7 @@ final class RabbitMqConnection implements IRabbitMqConnection
 	private $logger;
 
 	public function __construct(
-		Log\LoggerInterface $logger,
+		?Log\LoggerInterface $logger = null,
 		?EventLoop\LoopInterface $eventLoop = null,
 		string $host = '127.0.0.1',
 		int $port = 5672,
@@ -81,7 +81,7 @@ final class RabbitMqConnection implements IRabbitMqConnection
 		$this->password = $password;
 
 		$this->eventLoop = $eventLoop;
-		$this->logger = $logger;
+		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

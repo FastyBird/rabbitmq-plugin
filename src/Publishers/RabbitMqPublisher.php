@@ -52,13 +52,13 @@ final class RabbitMqPublisher implements IRabbitMqPublisher
 		string $origin,
 		Connections\IRabbitMqConnection $connection,
 		DateTimeFactory\DateTimeFactory $dateTimeFactory,
-		Log\LoggerInterface $logger
+		?Log\LoggerInterface $logger = null
 	) {
 		$this->origin = $origin;
 
 		$this->connection = $connection;
 		$this->dateTimeFactory = $dateTimeFactory;
-		$this->logger = $logger;
+		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

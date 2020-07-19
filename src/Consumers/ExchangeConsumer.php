@@ -51,10 +51,10 @@ final class ExchangeConsumer implements IExchangeConsumer
 
 	public function __construct(
 		JsonSchemas\Schemas\IValidator $jsonValidator,
-		Log\LoggerInterface $logger
+		?Log\LoggerInterface $logger = null
 	) {
 		$this->jsonValidator = $jsonValidator;
-		$this->logger = $logger;
+		$this->logger = $logger ?? new Log\NullLogger();
 
 		$this->handlers = new SplObjectStorage();
 	}

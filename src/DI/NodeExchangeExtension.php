@@ -49,7 +49,7 @@ class NodeExchangeExtension extends DI\CompilerExtension
 				'username'  => Schema\Expect::string('guest'),
 				'password'  => Schema\Expect::string('guest'),
 				'queueName' => Schema\Expect::string()->required(),
-				'routing'   => Schema\Expect::array()->items(Schema\Expect::string()),
+				'routing'   => Schema\Expect::array([])->items(Schema\Expect::string()),
 			]),
 		]);
 	}
