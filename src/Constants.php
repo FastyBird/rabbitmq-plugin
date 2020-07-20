@@ -4,11 +4,11 @@
  * Constants.php
  *
  * @license        More in license.md
- * @copyright      https://www.fastybird.com
+ * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeExchange!
  * @subpackage     common
- * @since          0.0.1
+ * @since          0.1.0
  *
  * @date           02.03.20
  */

@@ -4,7 +4,7 @@
  * IExchangeConsumer.php
  *
  * @license        More in license.md
- * @copyright      https://www.fastybird.com
+ * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeExchange!
  * @subpackage     Consumers

@@ -4,7 +4,7 @@
  * NodeExchangeExtension.php
  *
  * @license        More in license.md
- * @copyright      https://www.fastybird.com
+ * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeExchange!
  * @subpackage     DI
@@ -16,6 +16,7 @@
 namespace FastyBird\NodeExchange\DI;
 
 use FastyBird\NodeExchange;
+use FastyBird\NodeExchange\Commands;
 use FastyBird\NodeExchange\Connections;
 use FastyBird\NodeExchange\Consumers;
 use FastyBird\NodeExchange\Publishers;
@@ -25,7 +26,7 @@ use Nette\Schema;
 use stdClass;
 
 /**
- * Microservice node helpers extension container
+ * Message exchange extension container
  *
  * @package        FastyBird:NodeExchange!
  * @subpackage     DI
@@ -36,26 +37,32 @@ class NodeExchangeExtension extends DI\CompilerExtension
 {
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getConfigSchema(): Schema\Schema
 	{
 		return Schema\Expect::structure([
 			'origin'   => Schema\Expect::string()->required(),
-			'rabbitmq' => Schema\Expect::structure([
-				'host'      => Schema\Expect::string()->default('127.0.0.1'),
-				'port'      => Schema\Expect::int(5672),
-				'vhost'     => Schema\Expect::string('/'),
-				'username'  => Schema\Expect::string('guest'),
-				'password'  => Schema\Expect::string('guest'),
-				'queueName' => Schema\Expect::string()->required(),
-				'routing'   => Schema\Expect::array([])->items(Schema\Expect::string()),
+			'rabbitMQ' => Schema\Expect::structure([
+				'connection' => Schema\Expect::structure([
+					'host'     => Schema\Expect::string()->default('127.0.0.1'),
+					'port'     => Schema\Expect::int(5672),
+					'vhost'    => Schema\Expect::string('/'),
+					'username' => Schema\Expect::string('guest'),
+					'password' => Schema\Expect::string('guest'),
+				]),
+				'queue'      => Schema\Expect::structure([
+					'name' => Schema\Expect::string()->required(),
+				]),
+				'routing'    => Schema\Expect::structure([
+					'keys' => Schema\Expect::array([])->items(Schema\Expect::string()),
+				]),
 			]),
 		]);
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function loadConfiguration(): void
 	{
@@ -66,18 +73,18 @@ class NodeExchangeExtension extends DI\CompilerExtension
 		$builder->addDefinition(null)
 			->setType(Connections\RabbitMqConnection::class)
 			->setArguments([
-				'host'     => $configuration->rabbitmq->host,
-				'port'     => $configuration->rabbitmq->port,
-				'vhost'    => $configuration->rabbitmq->vhost,
-				'username' => $configuration->rabbitmq->username,
-				'password' => $configuration->rabbitmq->password,
+				'host'     => $configuration->rabbitMQ->connection->host,
+				'port'     => $configuration->rabbitMQ->connection->port,
+				'vhost'    => $configuration->rabbitMQ->connection->vhost,
+				'username' => $configuration->rabbitMQ->connection->username,
+				'password' => $configuration->rabbitMQ->connection->password,
 			]);
 
 		$builder->addDefinition(null)
 			->setType(Consumers\ExchangeConsumer::class)
 			->addSetup('?->setQueueName(?)', [
 				'@self',
-				$configuration->rabbitmq->queueName,
+				$configuration->rabbitMQ->queue->name,
 			]);
 
 		$builder->addDefinition(null)
@@ -86,11 +93,14 @@ class NodeExchangeExtension extends DI\CompilerExtension
 
 		$builder->addDefinition(null)
 			->setType(NodeExchange\Exchange::class)
-			->setArgument('routingKeys', $configuration->rabbitmq->routing);
+			->setArgument('routingKeys', $configuration->rabbitMQ->routing->keys);
+
+		$builder->addDefinition(null)
+			->setType(Commands\ConsumerCommand::class);
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function beforeCompile(): void
 	{

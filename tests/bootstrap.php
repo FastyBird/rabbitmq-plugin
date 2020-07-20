@@ -7,6 +7,8 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 	exit(1);
 }
 
+Tester\Environment::bypassFinals();
+
 // Configure environment
 Environment::setupTester();
 Environment::setupTimezone('UTC');

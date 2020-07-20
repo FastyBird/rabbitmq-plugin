@@ -2,7 +2,7 @@
 # Node exchange DI configuration
 #
 # @license		More in license.md
-# @copyright	https://www.fastybird.com
+# @copyright	https://fastybird.com
 # @author		Adam Kadlec <adam.kadlec@fastybird.com>
 # @package		FastyBird:NodeExchange!
 # @subpackage	config
@@ -19,5 +19,6 @@ extensions:
 
 nodeExchange:
 	origin: com.fastybird.test
-	rabbitmq:
-		queueName: testingQueueName
+	rabbitMQ:
+		queue:
+			name: testingQueueName

@@ -4,7 +4,7 @@
  * ExchangeConsumer.php
  *
  * @license        More in license.md
- * @copyright      https://www.fastybird.com
+ * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeExchange!
  * @subpackage     Consumers
@@ -25,7 +25,7 @@ use SplObjectStorage;
 use Throwable;
 
 /**
- * Exchange message consumer
+ * Exchange message consumer container
  *
  * @package        FastyBird:NodeExchange!
  * @subpackage     Consumers

@@ -2,7 +2,7 @@
 # Node exchange DI configuration
 #
 # @license		More in license.md
-# @copyright	https://www.fastybird.com
+# @copyright	https://fastybird.com
 # @author		Adam Kadlec <adam.kadlec@fastybird.com>
 # @package		FastyBird:NodeExchange!
 # @subpackage	config
@@ -11,6 +11,7 @@
 # @date			19.07.20
 
 nodeExchange:
-	rabbitmq:
-		host: rabbitmq.loc
-		port: 1234
+	rabbitMQ:
+		connection:
+			host: rabbitmq.loc
+			port: 1234

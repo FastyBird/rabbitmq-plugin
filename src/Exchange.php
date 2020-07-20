@@ -4,7 +4,7 @@
  * Exchange.php
  *
  * @license        More in license.md
- * @copyright      https://www.fastybird.com
+ * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeExchange!
  * @subpackage     common
@@ -16,13 +16,15 @@
 namespace FastyBird\NodeExchange;
 
 use Bunny;
+use FastyBird\NodeExchange\Exceptions\InvalidStateException;
 use Nette;
 use React\Promise;
+use Throwable;
 
 /**
- * HTTP server command
+ * RabbitMQ exchange builder
  *
- * @package        FastyBird:NodeWebServer!
+ * @package        FastyBird:NodeExchange!
  * @subpackage     common
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -50,6 +52,9 @@ final class Exchange
 	/** @var Consumers\IExchangeConsumer */
 	private $consumer;
 
+	/** @var Bunny\Client|Bunny\Async\Client|null */
+	private $client = null;
+
 	/**
 	 * @param Connections\IRabbitMqConnection $connection
 	 * @param Consumers\IExchangeConsumer $consumer
@@ -71,6 +76,12 @@ final class Exchange
 	 */
 	public function initialize(): void
 	{
+		if (!$this->consumer->hasHandlers()) {
+			throw new InvalidStateException('No consumer handler registered. Exchange could not be initialized');
+		}
+
+		$this->client = $this->connection->getClient();
+
 		$channel = $this->connection->getChannel();
 
 		$channel->qos(0, 5);
@@ -80,10 +91,18 @@ final class Exchange
 
 	/**
 	 * @return void
+	 *
+	 * @throws Throwable
 	 */
 	public function initializeAsync(): void
 	{
-		$this->connection->getAsyncClient()
+		if (!$this->consumer->hasHandlers()) {
+			throw new InvalidStateException('No consumer handler registered. Exchange could not be initialized');
+		}
+
+		$this->client = $this->connection->getAsyncClient();
+
+		$this->client
 			->connect()
 			->then(function (Bunny\Async\Client $client) {
 				return $client->channel();
@@ -105,6 +124,36 @@ final class Exchange
 			->then(function (Bunny\Channel $channel): void {
 				$this->processChannel($channel);
 			});
+	}
+
+	/**
+	 * @return void
+	 */
+	public function run(): void
+	{
+		if ($this->client === null) {
+			throw new Exceptions\InvalidStateException('Exchange is not initialized');
+		}
+
+		if ($this->client instanceof Bunny\Client) {
+			$this->client->run();
+
+		} else {
+			throw new Exceptions\InvalidStateException('Exchange have to be started via React/EventLoop service');
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	public function stop(): void
+	{
+		if ($this->client instanceof Bunny\Client) {
+			$this->client->stop();
+
+		} elseif ($this->client instanceof Bunny\Async\Client) {
+			throw new Exceptions\InvalidStateException('Exchange have to be stopped via React/EventLoop service');
+		}
 	}
 
 	/**

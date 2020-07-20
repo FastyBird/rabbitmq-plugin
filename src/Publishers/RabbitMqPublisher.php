@@ -4,7 +4,7 @@
  * RabbitMqPublisher.php
  *
  * @license        More in license.md
- * @copyright      https://www.fastybird.com
+ * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeExchange!
  * @subpackage     Publishers
@@ -24,10 +24,10 @@ use Psr\Log;
 use React\Promise;
 
 /**
- * Rabbit MQ exchange publisher
+ * RabbitMQ exchange publisher
  *
  * @package        FastyBird:NodeExchange!
- * @subpackage     Subscribers
+ * @subpackage     Publishers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
