@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeExchange!
  * @subpackage     Commands
- * @since          0.1.1
+ * @since          0.1.0
  *
  * @date           03.03.20
  */

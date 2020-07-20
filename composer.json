@@ -38,7 +38,7 @@
     "bunny/bunny" : "^0.4",
     "contributte/console" : "^0.8",
     "fastybird/datetime-factory" : "^0.1",
-    "fastybird/json-schemas" : "^0.2",
+    "fastybird/node-metadata" : "^0.1.0",
     "nette/bootstrap" : "^3.0",
     "nette/di" : "^3.0",
     "nette/utils" : "^3.0",

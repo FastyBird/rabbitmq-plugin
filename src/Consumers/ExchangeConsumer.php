@@ -16,8 +16,8 @@
 namespace FastyBird\NodeExchange\Consumers;
 
 use Bunny;
-use FastyBird\JsonSchemas;
 use FastyBird\NodeExchange\Exceptions;
+use FastyBird\NodeMetadata\Schemas as NodeMetadataSchemas;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
@@ -43,14 +43,14 @@ final class ExchangeConsumer implements IExchangeConsumer
 	/** @var SplObjectStorage */
 	private $handlers;
 
-	/** @var JsonSchemas\Schemas\IValidator */
+	/** @var NodeMetadataSchemas\IValidator */
 	private $jsonValidator;
 
 	/** @var Log\LoggerInterface */
 	private $logger;
 
 	public function __construct(
-		JsonSchemas\Schemas\IValidator $jsonValidator,
+		NodeMetadataSchemas\IValidator $jsonValidator,
 		?Log\LoggerInterface $logger = null
 	) {
 		$this->jsonValidator = $jsonValidator;

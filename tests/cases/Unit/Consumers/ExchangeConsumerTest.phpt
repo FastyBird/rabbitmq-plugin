@@ -3,9 +3,9 @@
 namespace Tests\Cases;
 
 use Bunny;
-use FastyBird\JsonSchemas;
 use FastyBird\NodeExchange\Consumers;
 use FastyBird\NodeExchange\Exceptions;
+use FastyBird\NodeMetadata\Schemas as NodeMetadataSchemas;
 use Mockery;
 use Nette\Utils;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
@@ -22,7 +22,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 
 	public function testEmptyHandlers(): void
 	{
-		$validator = Mockery::mock(JsonSchemas\Schemas\IValidator::class);
+		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
 
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 
@@ -49,7 +49,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 	 */
 	public function testNotSetQueueName(): void
 	{
-		$validator = Mockery::mock(JsonSchemas\Schemas\IValidator::class);
+		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
 
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 
@@ -63,7 +63,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 
 	public function testSetQueueName(): void
 	{
-		$validator = Mockery::mock(JsonSchemas\Schemas\IValidator::class);
+		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
 
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 
@@ -94,7 +94,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			throw new Exceptions\InvalidStateException('Test data could not be prepared');
 		}
 
-		$validator = Mockery::mock(JsonSchemas\Schemas\IValidator::class);
+		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
 		$validator
 			->shouldReceive('validate')
 			->withArgs([
@@ -161,7 +161,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			throw new Exceptions\InvalidStateException('Test data could not be prepared');
 		}
 
-		$validator = Mockery::mock(JsonSchemas\Schemas\IValidator::class);
+		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
 		$validator
 			->shouldReceive('validate')
 			->withArgs([
@@ -228,7 +228,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			throw new Exceptions\InvalidStateException('Test data could not be prepared');
 		}
 
-		$validator = Mockery::mock(JsonSchemas\Schemas\IValidator::class);
+		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
 		$validator
 			->shouldReceive('validate')
 			->withArgs([
@@ -295,7 +295,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			throw new Exceptions\InvalidStateException('Test data could not be prepared');
 		}
 
-		$validator = Mockery::mock(JsonSchemas\Schemas\IValidator::class);
+		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
 
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 
@@ -356,7 +356,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			$content
 		);
 
-		$validator = Mockery::mock(JsonSchemas\Schemas\IValidator::class);
+		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
 		$validator
 			->shouldReceive('validate')
 			->withArgs([
@@ -435,7 +435,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			$content
 		);
 
-		$validator = Mockery::mock(JsonSchemas\Schemas\IValidator::class);
+		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
 		$validator
 			->shouldReceive('validate')
 			->withArgs([

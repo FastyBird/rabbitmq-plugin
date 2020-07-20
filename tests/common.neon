@@ -14,7 +14,7 @@ php:
 	date.timezone: Europe/Prague
 
 extensions:
-	fbJsonSchema		: FastyBird\JsonSchemas\DI\JsonSchemasExtension
+	fbNodeMetadata		: FastyBird\NodeMetadata\DI\NodeMetadataExtension
 	fbDateTimeFactory	: FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
 
 nodeExchange:
