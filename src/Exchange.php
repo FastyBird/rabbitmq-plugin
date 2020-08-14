@@ -16,6 +16,7 @@
 namespace FastyBird\NodeExchange;
 
 use Bunny;
+use Closure;
 use FastyBird\NodeExchange\Exceptions\InvalidStateException;
 use Nette;
 use React\Promise;
