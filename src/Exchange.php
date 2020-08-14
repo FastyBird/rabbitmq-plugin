@@ -40,6 +40,12 @@ final class Exchange
 	private const EXCHANGE_TYPE = 'topic';
 	private const MAX_CONSUMED_MESSAGES = 50;
 
+	/** @var Closure[] */
+	public $onBeforeConsumeMessage = [];
+
+	/** @var Closure[] */
+	public $onAfterConsumeMessage = [];
+
 	/** @var string[] */
 	private $routingKeys;
 
