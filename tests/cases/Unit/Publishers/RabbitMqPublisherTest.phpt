@@ -46,7 +46,7 @@ final class RabbitMqPublisherTest extends BaseMockeryTestCase
 		$dateFactory
 			->shouldReceive('getNow')
 			->andReturn(new DateTimeImmutable())
-			->times(1);
+			->times(2);
 
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 		$logger
