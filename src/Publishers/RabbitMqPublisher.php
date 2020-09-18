@@ -96,19 +96,51 @@ final class RabbitMqPublisher implements IRabbitMqPublisher
 
 		if (is_bool($result)) {
 			if ($result) {
-				$this->logger->info('[FB:EXCHANGE] Received message was pushed into data exchange');
+				$this->logger->info('[FB:EXCHANGE] Received message was pushed into data exchange', [
+					'message' => [
+						'routingKey' => $routingKey,
+						'headers'    => [
+							'origin'  => $this->origin,
+							'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
+						],
+					],
+				]);
 			} else {
-				$this->logger->error('[FB:EXCHANGE] Received message could not be pushed into data exchange');
+				$this->logger->error('[FB:EXCHANGE] Received message could not be pushed into data exchange', [
+					'message' => [
+						'routingKey' => $routingKey,
+						'headers'    => [
+							'origin'  => $this->origin,
+							'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
+						],
+					],
+				]);
 			}
 
 		} elseif ($result instanceof Promise\PromiseInterface) {
 			$result
 				->then(
-					function (): void {
-						$this->logger->info('[FB:EXCHANGE] Received message was pushed into data exchange');
+					function () use ($routingKey): void {
+						$this->logger->info('[FB:EXCHANGE] Received message was pushed into data exchange', [
+							'message' => [
+								'routingKey' => $routingKey,
+								'headers'    => [
+									'origin'  => $this->origin,
+									'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
+								],
+							],
+						]);
 					},
-					function (): void {
-						$this->logger->error('[FB:EXCHANGE] Received message could not be pushed into data exchange');
+					function () use ($routingKey): void {
+						$this->logger->error('[FB:EXCHANGE] Received message could not be pushed into data exchange', [
+							'message' => [
+								'routingKey' => $routingKey,
+								'headers'    => [
+									'origin'  => $this->origin,
+									'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
+								],
+							],
+						]);
 					}
 				);
 		}
