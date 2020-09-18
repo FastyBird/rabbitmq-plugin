@@ -375,6 +375,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 					'message' => [
 						'routingKey' => $message->routingKey,
 						'headers'    => $message->headers,
+						'body'       => $message->content,
 					],
 				],
 			])
@@ -454,6 +455,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 					'message' => [
 						'routingKey' => $message->routingKey,
 						'headers'    => $message->headers,
+						'body'       => $message->content,
 					],
 				],
 			])
