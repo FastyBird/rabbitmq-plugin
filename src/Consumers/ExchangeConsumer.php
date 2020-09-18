@@ -124,18 +124,20 @@ final class ExchangeConsumer implements IExchangeConsumer
 
 					} else {
 						$this->logger->debug('[FB:EXCHANGE] Received message could not be handled', [
-							'message'   => [
+							'message' => [
 								'routingKey' => $message->routingKey,
 								'headers'    => $message->headers,
+								'body'       => $message->content,
 							],
 						]);
 					}
 
 				} else {
 					$this->logger->debug('[FB:EXCHANGE] Received message is not valid', [
-						'message'   => [
+						'message' => [
 							'routingKey' => $message->routingKey,
 							'headers'    => $message->headers,
+							'body'       => $message->content,
 						],
 					]);
 				}

@@ -74,6 +74,12 @@ final class RabbitMqPublisher implements IRabbitMqPublisher
 
 		} catch (Utils\JsonException $ex) {
 			$this->logger->error('[FB:EXCHANGE] Data could not be converted to message', [
+				'message'   => [
+					'routingKey' => $routingKey,
+					'headers'    => [
+						'origin' => $this->origin,
+					],
+				],
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code'    => $ex->getCode(),
@@ -103,6 +109,7 @@ final class RabbitMqPublisher implements IRabbitMqPublisher
 							'origin'  => $this->origin,
 							'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
 						],
+						'body'       => $message,
 					],
 				]);
 			} else {
@@ -113,6 +120,7 @@ final class RabbitMqPublisher implements IRabbitMqPublisher
 							'origin'  => $this->origin,
 							'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
 						],
+						'body'       => $message,
 					],
 				]);
 			}
@@ -120,7 +128,7 @@ final class RabbitMqPublisher implements IRabbitMqPublisher
 		} elseif ($result instanceof Promise\PromiseInterface) {
 			$result
 				->then(
-					function () use ($routingKey): void {
+					function () use ($routingKey, $message): void {
 						$this->logger->info('[FB:EXCHANGE] Received message was pushed into data exchange', [
 							'message' => [
 								'routingKey' => $routingKey,
@@ -128,10 +136,11 @@ final class RabbitMqPublisher implements IRabbitMqPublisher
 									'origin'  => $this->origin,
 									'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
 								],
+								'body'       => $message,
 							],
 						]);
 					},
-					function () use ($routingKey): void {
+					function () use ($routingKey, $message): void {
 						$this->logger->error('[FB:EXCHANGE] Received message could not be pushed into data exchange', [
 							'message' => [
 								'routingKey' => $routingKey,
@@ -139,6 +148,7 @@ final class RabbitMqPublisher implements IRabbitMqPublisher
 									'origin'  => $this->origin,
 									'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
 								],
+								'body'       => $message,
 							],
 						]);
 					}
