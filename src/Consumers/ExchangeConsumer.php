@@ -165,6 +165,13 @@ final class ExchangeConsumer implements IExchangeConsumer
 			return $this->jsonValidator->validate($content, $schema);
 
 		} catch (Throwable $ex) {
+			$this->logger->warning('[FB:EXCHANGE] Message validation error', [
+				'exception' => [
+					'message' => $ex->getMessage(),
+					'code'    => $ex->getCode(),
+				],
+			]);
+
 			return null;
 		}
 	}

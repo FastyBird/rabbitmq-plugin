@@ -459,6 +459,18 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 					],
 				],
 			])
+			->times(1)
+			->getMock()
+			->shouldReceive('warning')
+			->withArgs([
+				'[FB:EXCHANGE] Message validation error',
+				[
+					'exception' => [
+						'message' => 'Could not validate message',
+						'code'    => 0,
+					],
+				],
+			])
 			->times(1);
 
 		$consumer = new Consumers\ExchangeConsumer(
