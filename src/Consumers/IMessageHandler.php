@@ -30,12 +30,14 @@ interface IMessageHandler
 
 	/**
 	 * @param string $routingKey
+	 * @param string $origin
 	 * @param Utils\ArrayHash $payload
 	 *
 	 * @return bool
 	 */
 	public function process(
 		string $routingKey,
+		string $origin,
 		Utils\ArrayHash $payload
 	): bool;
 

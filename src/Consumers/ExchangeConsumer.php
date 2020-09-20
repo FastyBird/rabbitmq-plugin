@@ -191,7 +191,7 @@ final class ExchangeConsumer implements IExchangeConsumer
 		IMessageHandler $handler
 	): bool {
 		try {
-			return $handler->process($message->routingKey, $payload);
+			return $handler->process($message->routingKey, $message->getHeader('origin'), $payload);
 
 		} catch (Exceptions\TerminateException $ex) {
 			throw $ex;

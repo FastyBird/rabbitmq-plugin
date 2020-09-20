@@ -118,8 +118,9 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			->times(1)
 			->getMock()
 			->shouldReceive('process')
-			->withArgs(function (string $routingKey, Utils\ArrayHash $payload) use ($data): bool {
+			->withArgs(function (string $routingKey, string $origin, Utils\ArrayHash $payload) use ($data): bool {
 				Assert::same('routing.key.one', $routingKey);
+				Assert::same('test.origin', $origin);
 				Assert::equal(Utils\ArrayHash::from($data), $payload);
 
 				return true;
@@ -185,8 +186,9 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			->times(1)
 			->getMock()
 			->shouldReceive('process')
-			->withArgs(function (string $routingKey, Utils\ArrayHash $payload) use ($data): bool {
+			->withArgs(function (string $routingKey, string $origin, Utils\ArrayHash $payload) use ($data): bool {
 				Assert::same('routing.key.one', $routingKey);
+				Assert::same('test.origin', $origin);
 				Assert::equal(Utils\ArrayHash::from($data), $payload);
 
 				return true;
@@ -252,8 +254,9 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			->times(1)
 			->getMock()
 			->shouldReceive('process')
-			->withArgs(function (string $routingKey, Utils\ArrayHash $payload) use ($data): bool {
+			->withArgs(function (string $routingKey, string $origin, Utils\ArrayHash $payload) use ($data): bool {
 				Assert::same('routing.key.one', $routingKey);
+				Assert::same('test.origin', $origin);
 				Assert::equal(Utils\ArrayHash::from($data), $payload);
 
 				return true;
@@ -393,8 +396,9 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			->times(1)
 			->getMock()
 			->shouldReceive('process')
-			->withArgs(function (string $routingKey, Utils\ArrayHash $payload) use ($data): bool {
+			->withArgs(function (string $routingKey, string $origin, Utils\ArrayHash $payload) use ($data): bool {
 				Assert::same('routing.key.one', $routingKey);
+				Assert::same('test.origin', $origin);
 				Assert::equal(Utils\ArrayHash::from($data), $payload);
 
 				return true;
