@@ -1,6 +1,6 @@
 # FastyBird node exchange library
 
-[![Build Status](https://img.shields.io/travis/FastyBird/node-exchange.svg?style=flat-square)](https://travis-ci.org/FastyBird/node-exchange)
+[![Build Status](https://img.shields.io/travis/com/FastyBird/node-exchange.svg?style=flat-square)](https://travis-ci.com/FastyBird/node-exchange)
 [![Code coverage](https://img.shields.io/coveralls/FastyBird/node-exchange.svg?style=flat-square)](https://coveralls.io/r/FastyBird/node-exchange)
 ![PHP from Travis config](https://img.shields.io/travis/php-v/fastybird/node-exchange?style=flat-square)
 [![Licence](https://img.shields.io/packagist/l/FastyBird/node-exchange.svg?style=flat-square)](https://packagist.org/packages/FastyBird/node-exchange)
