@@ -8,6 +8,5 @@ return [
 			'attributeThree' => false,
 			'attributeFour'  => null,
 		],
-		file_get_contents(__DIR__ . '/validator.schema.json'),
 	],
 ];

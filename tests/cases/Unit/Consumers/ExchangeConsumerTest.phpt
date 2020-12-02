@@ -5,7 +5,6 @@ namespace Tests\Cases;
 use Bunny;
 use FastyBird\NodeExchange\Consumers;
 use FastyBird\NodeExchange\Exceptions;
-use FastyBird\NodeMetadata\Schemas as NodeMetadataSchemas;
 use Mockery;
 use Nette\Utils;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
@@ -22,12 +21,9 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 
 	public function testEmptyHandlers(): void
 	{
-		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
-
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 
 		$consumer = new Consumers\ExchangeConsumer(
-			$validator,
 			$logger
 		);
 
@@ -49,12 +45,9 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 	 */
 	public function testNotSetQueueName(): void
 	{
-		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
-
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 
 		$consumer = new Consumers\ExchangeConsumer(
-			$validator,
 			$logger
 		);
 
@@ -63,12 +56,9 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 
 	public function testSetQueueName(): void
 	{
-		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
-
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 
 		$consumer = new Consumers\ExchangeConsumer(
-			$validator,
 			$logger
 		);
 
@@ -79,49 +69,32 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 
 	/**
 	 * @param mixed[] $data
-	 * @param string $schema
 	 *
 	 * @dataProvider ./../../../fixtures/Consumers/consumeValidMessage.php
 	 */
 	public function testConsumeNoOriginMessage(
-		array $data,
-		string $schema
+		array $data
 	): void {
 		try {
-			$content = Utils\Json::encode($data);
+			$body = Utils\Json::encode($data);
 
 		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\InvalidStateException('Test data could not be prepared');
 		}
 
-		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
-		$validator
-			->shouldReceive('validate')
-			->withArgs([
-				$content,
-				$schema,
-			])
-			->andReturn(Utils\ArrayHash::from($data))
-			->times(1);
-
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 
 		$consumer = new Consumers\ExchangeConsumer(
-			$validator,
 			$logger
 		);
 
 		$handler = Mockery::mock(Consumers\IMessageHandler::class);
 		$handler
-			->shouldReceive('getSchema')
-			->andReturn($schema)
-			->times(1)
-			->getMock()
 			->shouldReceive('process')
-			->withArgs(function (string $routingKey, string $origin, Utils\ArrayHash $payload) use ($data): bool {
+			->withArgs(function (string $routingKey, string $origin, string $content) use ($body): bool {
 				Assert::same('routing.key.one', $routingKey);
 				Assert::same('test.origin', $origin);
-				Assert::equal(Utils\ArrayHash::from($data), $payload);
+				Assert::equal($body, $content);
 
 				return true;
 			})
@@ -139,7 +112,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			[
 				'origin' => 'test.origin',
 			],
-			$content
+			$body
 		);
 
 		Assert::equal(Consumers\IExchangeConsumer::MESSAGE_ACK, $consumer->consume($message));
@@ -147,49 +120,32 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 
 	/**
 	 * @param mixed[] $data
-	 * @param string $schema
 	 *
 	 * @dataProvider ./../../../fixtures/Consumers/consumeValidMessage.php
 	 */
 	public function testConsumeSingleOriginMessage(
-		array $data,
-		string $schema
+		array $data
 	): void {
 		try {
-			$content = Utils\Json::encode($data);
+			$body = Utils\Json::encode($data);
 
 		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\InvalidStateException('Test data could not be prepared');
 		}
 
-		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
-		$validator
-			->shouldReceive('validate')
-			->withArgs([
-				$content,
-				$schema,
-			])
-			->andReturn(Utils\ArrayHash::from($data))
-			->times(1);
-
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 
 		$consumer = new Consumers\ExchangeConsumer(
-			$validator,
 			$logger
 		);
 
 		$handler = Mockery::mock(Consumers\IMessageHandler::class);
 		$handler
-			->shouldReceive('getSchema')
-			->andReturn($schema)
-			->times(1)
-			->getMock()
 			->shouldReceive('process')
-			->withArgs(function (string $routingKey, string $origin, Utils\ArrayHash $payload) use ($data): bool {
+			->withArgs(function (string $routingKey, string $origin, string $content) use ($body): bool {
 				Assert::same('routing.key.one', $routingKey);
 				Assert::same('test.origin', $origin);
-				Assert::equal(Utils\ArrayHash::from($data), $payload);
+				Assert::equal($body, $content);
 
 				return true;
 			})
@@ -207,7 +163,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			[
 				'origin' => 'test.origin',
 			],
-			$content
+			$body
 		);
 
 		Assert::equal(Consumers\IExchangeConsumer::MESSAGE_ACK, $consumer->consume($message));
@@ -215,49 +171,32 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 
 	/**
 	 * @param mixed[] $data
-	 * @param string $schema
 	 *
 	 * @dataProvider ./../../../fixtures/Consumers/consumeValidMessage.php
 	 */
 	public function testConsumeMultiOriginMessage(
-		array $data,
-		string $schema
+		array $data
 	): void {
 		try {
-			$content = Utils\Json::encode($data);
+			$body = Utils\Json::encode($data);
 
 		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\InvalidStateException('Test data could not be prepared');
 		}
 
-		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
-		$validator
-			->shouldReceive('validate')
-			->withArgs([
-				$content,
-				$schema,
-			])
-			->andReturn(Utils\ArrayHash::from($data))
-			->times(1);
-
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 
 		$consumer = new Consumers\ExchangeConsumer(
-			$validator,
 			$logger
 		);
 
 		$handler = Mockery::mock(Consumers\IMessageHandler::class);
 		$handler
-			->shouldReceive('getSchema')
-			->andReturn($schema)
-			->times(1)
-			->getMock()
 			->shouldReceive('process')
-			->withArgs(function (string $routingKey, string $origin, Utils\ArrayHash $payload) use ($data): bool {
+			->withArgs(function (string $routingKey, string $origin, string $content) use ($body): bool {
 				Assert::same('routing.key.one', $routingKey);
 				Assert::same('test.origin', $origin);
-				Assert::equal(Utils\ArrayHash::from($data), $payload);
+				Assert::equal($body, $content);
 
 				return true;
 			})
@@ -275,7 +214,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			[
 				'origin' => 'test.origin',
 			],
-			$content
+			$body
 		);
 
 		Assert::equal(Consumers\IExchangeConsumer::MESSAGE_ACK, $consumer->consume($message));
@@ -283,65 +222,14 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 
 	/**
 	 * @param mixed[] $data
-	 * @param string $schema
-	 *
-	 * @dataProvider ./../../../fixtures/Consumers/consumeValidMessage.php
-	 */
-	public function testConsumeInvalidOriginMessage(
-		array $data,
-		string $schema
-	): void {
-		try {
-			$content = Utils\Json::encode($data);
-
-		} catch (Utils\JsonException $ex) {
-			throw new Exceptions\InvalidStateException('Test data could not be prepared');
-		}
-
-		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
-
-		$logger = Mockery::mock(Log\LoggerInterface::class);
-
-		$consumer = new Consumers\ExchangeConsumer(
-			$validator,
-			$logger
-		);
-
-		$handler = Mockery::mock(Consumers\IMessageHandler::class);
-		$handler
-			->shouldReceive('getSchema')
-			->andReturn(null)
-			->times(1);
-
-		$consumer->addHandler($handler);
-
-		$message = new Bunny\Message(
-			'consumerTag',
-			'deliveryTag',
-			'redelivered',
-			'exchange',
-			'routing.key.one',
-			[
-				'origin' => 'test.origin',
-			],
-			$content
-		);
-
-		Assert::equal(Consumers\IExchangeConsumer::MESSAGE_REJECT, $consumer->consume($message));
-	}
-
-	/**
-	 * @param mixed[] $data
-	 * @param string $schema
 	 *
 	 * @dataProvider ./../../../fixtures/Consumers/consumeValidMessage.php
 	 */
 	public function testConsumeInvalidMessage(
-		array $data,
-		string $schema
+		array $data
 	): void {
 		try {
-			$content = Utils\Json::encode($data);
+			$body = Utils\Json::encode($data);
 
 		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\InvalidStateException('Test data could not be prepared');
@@ -356,18 +244,8 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			[
 				'origin' => 'test.origin',
 			],
-			$content
+			$body
 		);
-
-		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
-		$validator
-			->shouldReceive('validate')
-			->withArgs([
-				$content,
-				$schema,
-			])
-			->andReturn(Utils\ArrayHash::from($data))
-			->times(1);
 
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 		$logger
@@ -385,109 +263,21 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			->times(1);
 
 		$consumer = new Consumers\ExchangeConsumer(
-			$validator,
 			$logger
 		);
 
 		$handler = Mockery::mock(Consumers\IMessageHandler::class);
 		$handler
-			->shouldReceive('getSchema')
-			->andReturn($schema)
-			->times(1)
-			->getMock()
 			->shouldReceive('process')
-			->withArgs(function (string $routingKey, string $origin, Utils\ArrayHash $payload) use ($data): bool {
+			->withArgs(function (string $routingKey, string $origin, string $content) use ($body): bool {
 				Assert::same('routing.key.one', $routingKey);
 				Assert::same('test.origin', $origin);
-				Assert::equal(Utils\ArrayHash::from($data), $payload);
+				Assert::equal($content, $body);
 
 				return true;
 			})
 			->andThrow(new Exceptions\InvalidStateException('Could not handle message'))
 			->times(1);
-
-		$consumer->addHandler($handler);
-
-		Assert::equal(Consumers\IExchangeConsumer::MESSAGE_REJECT, $consumer->consume($message));
-	}
-
-	/**
-	 * @param mixed[] $data
-	 * @param string $schema
-	 *
-	 * @dataProvider ./../../../fixtures/Consumers/consumeValidMessage.php
-	 */
-	public function testConsumeNotValidSchemaMessage(
-		array $data,
-		string $schema
-	): void {
-		try {
-			$content = Utils\Json::encode($data);
-
-		} catch (Utils\JsonException $ex) {
-			throw new Exceptions\InvalidStateException('Test data could not be prepared');
-		}
-
-		$message = new Bunny\Message(
-			'consumerTag',
-			'deliveryTag',
-			'redelivered',
-			'exchange',
-			'routing.key.one',
-			[
-				'origin' => 'test.origin',
-			],
-			$content
-		);
-
-		$validator = Mockery::mock(NodeMetadataSchemas\IValidator::class);
-		$validator
-			->shouldReceive('validate')
-			->withArgs([
-				$content,
-				$schema,
-			])
-			->andThrow(new Exceptions\InvalidStateException('Could not validate message'))
-			->times(1);
-
-		$logger = Mockery::mock(Log\LoggerInterface::class);
-		$logger
-			->shouldReceive('debug')
-			->withArgs([
-				'[FB:EXCHANGE] Received message is not valid',
-				[
-					'message' => [
-						'routingKey' => $message->routingKey,
-						'headers'    => $message->headers,
-						'body'       => $message->content,
-					],
-				],
-			])
-			->times(1)
-			->getMock()
-			->shouldReceive('warning')
-			->withArgs([
-				'[FB:EXCHANGE] Message validation error',
-				[
-					'exception' => [
-						'message' => 'Could not validate message',
-						'code'    => 0,
-					],
-				],
-			])
-			->times(1);
-
-		$consumer = new Consumers\ExchangeConsumer(
-			$validator,
-			$logger
-		);
-
-		$handler = Mockery::mock(Consumers\IMessageHandler::class);
-		$handler
-			->shouldReceive('getSchema')
-			->andReturn($schema)
-			->times(1)
-			->getMock();
 
 		$consumer->addHandler($handler);
 

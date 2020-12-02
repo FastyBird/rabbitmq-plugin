@@ -17,9 +17,7 @@ namespace FastyBird\NodeExchange\Consumers;
 
 use Bunny;
 use FastyBird\NodeExchange\Exceptions;
-use FastyBird\NodeMetadata\Schemas as NodeMetadataSchemas;
 use Nette;
-use Nette\Utils;
 use Psr\Log;
 use SplObjectStorage;
 use Throwable;
@@ -43,17 +41,12 @@ final class ExchangeConsumer implements IExchangeConsumer
 	/** @var SplObjectStorage */
 	private $handlers;
 
-	/** @var NodeMetadataSchemas\IValidator */
-	private $jsonValidator;
-
 	/** @var Log\LoggerInterface */
 	private $logger;
 
 	public function __construct(
-		NodeMetadataSchemas\IValidator $jsonValidator,
 		?Log\LoggerInterface $logger = null
 	) {
-		$this->jsonValidator = $jsonValidator;
 		$this->logger = $logger ?? new Log\NullLogger();
 
 		$this->handlers = new SplObjectStorage();
@@ -111,36 +104,19 @@ final class ExchangeConsumer implements IExchangeConsumer
 
 		/** @var IMessageHandler $handler */
 		foreach ($this->handlers as $handler) {
-			$schema = $handler->getSchema($message->routingKey, $message->getHeader('origin'));
+			$handlerResult = $this->processMessage($message, $handler);
 
-			if ($schema !== null) {
-				$payload = $this->validateMessage($message->content, $schema);
+			if ($handlerResult) {
+				$result = $handlerResult;
 
-				if ($payload !== null) {
-					$handlerResult = $this->processMessage($message, $payload, $handler);
-
-					if ($handlerResult) {
-						$result = $handlerResult;
-
-					} else {
-						$this->logger->debug('[FB:EXCHANGE] Received message could not be handled', [
-							'message' => [
-								'routingKey' => $message->routingKey,
-								'headers'    => $message->headers,
-								'body'       => $message->content,
-							],
-						]);
-					}
-
-				} else {
-					$this->logger->debug('[FB:EXCHANGE] Received message is not valid', [
-						'message' => [
-							'routingKey' => $message->routingKey,
-							'headers'    => $message->headers,
-							'body'       => $message->content,
-						],
-					]);
-				}
+			} else {
+				$this->logger->debug('[FB:EXCHANGE] Received message could not be handled', [
+					'message' => [
+						'routingKey' => $message->routingKey,
+						'headers'    => $message->headers,
+						'body'       => $message->content,
+					],
+				]);
 			}
 		}
 
@@ -152,33 +128,7 @@ final class ExchangeConsumer implements IExchangeConsumer
 	}
 
 	/**
-	 * @param string $content
-	 * @param string $schema
-	 *
-	 * @return Utils\ArrayHash|null
-	 */
-	private function validateMessage(
-		string $content,
-		string $schema
-	): ?Utils\ArrayHash {
-		try {
-			return $this->jsonValidator->validate($content, $schema);
-
-		} catch (Throwable $ex) {
-			$this->logger->warning('[FB:EXCHANGE] Message validation error', [
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code'    => $ex->getCode(),
-				],
-			]);
-
-			return null;
-		}
-	}
-
-	/**
 	 * @param Bunny\Message $message
-	 * @param Utils\ArrayHash $payload
 	 * @param IMessageHandler $handler
 	 *
 	 * @return bool
@@ -187,11 +137,10 @@ final class ExchangeConsumer implements IExchangeConsumer
 	 */
 	private function processMessage(
 		Bunny\Message $message,
-		Utils\ArrayHash $payload,
 		IMessageHandler $handler
 	): bool {
 		try {
-			return $handler->process($message->routingKey, $message->getHeader('origin'), $payload);
+			return $handler->process($message->routingKey, $message->getHeader('origin'), $message->content);
 
 		} catch (Exceptions\TerminateException $ex) {
 			throw $ex;

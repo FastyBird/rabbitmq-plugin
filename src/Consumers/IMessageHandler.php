@@ -15,8 +15,6 @@
 
 namespace FastyBird\NodeExchange\Consumers;
 
-use Nette\Utils;
-
 /**
  * Exchange messages consumer interface
  *
@@ -31,22 +29,14 @@ interface IMessageHandler
 	/**
 	 * @param string $routingKey
 	 * @param string $origin
-	 * @param Utils\ArrayHash $payload
+	 * @param string $payload
 	 *
 	 * @return bool
 	 */
 	public function process(
 		string $routingKey,
 		string $origin,
-		Utils\ArrayHash $payload
+		string $payload
 	): bool;
-
-	/**
-	 * @param string $routingKey
-	 * @param string $origin
-	 *
-	 * @return string|null
-	 */
-	public function getSchema(string $routingKey, string $origin): ?string;
 
 }
