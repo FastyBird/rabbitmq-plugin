@@ -1,5 +1,5 @@
 {
-  "name" : "fastybird/node-exchange",
+  "name" : "fastybird/rabbitmq-plugin",
   "type" : "library",
   "description" : "FastyBird RabbitMQ plugin",
   "keywords" : [
