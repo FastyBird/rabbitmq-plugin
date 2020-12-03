@@ -1,28 +1,28 @@
-# FastyBird node exchange library
+# FastyBird Rabbit MQ plugin library
 
-[![Build Status](https://img.shields.io/travis/com/FastyBird/node-exchange.svg?style=flat-square)](https://travis-ci.com/FastyBird/node-exchange)
-[![Code coverage](https://img.shields.io/coveralls/FastyBird/node-exchange.svg?style=flat-square)](https://coveralls.io/r/FastyBird/node-exchange)
-![PHP from Travis config](https://img.shields.io/travis/php-v/fastybird/node-exchange?style=flat-square)
-[![Licence](https://img.shields.io/packagist/l/FastyBird/node-exchange.svg?style=flat-square)](https://packagist.org/packages/FastyBird/node-exchange)
-[![Downloads total](https://img.shields.io/packagist/dt/FastyBird/node-exchange.svg?style=flat-square)](https://packagist.org/packages/FastyBird/node-exchange)
-[![Latest stable](https://img.shields.io/packagist/v/FastyBird/node-exchange.svg?style=flat-square)](https://packagist.org/packages/FastyBird/node-exchange)
+[![Build Status](https://img.shields.io/travis/com/FastyBird/rabbitmq-plugin.svg?style=flat-square)](https://travis-ci.com/FastyBird/rabbitmq-plugin)
+[![Code coverage](https://img.shields.io/coveralls/FastyBird/rabbitmq-plugin.svg?style=flat-square)](https://coveralls.io/r/FastyBird/rabbitmq-plugin)
+![PHP](https://img.shields.io/packagist/php-v/fastybird/rabbitmq-plugin?style=flat-square)
+[![Licence](https://img.shields.io/packagist/l/FastyBird/rabbitmq-plugin.svg?style=flat-square)](https://packagist.org/packages/FastyBird/rabbitmq-plugin)
+[![Downloads total](https://img.shields.io/packagist/dt/FastyBird/rabbitmq-plugin.svg?style=flat-square)](https://packagist.org/packages/FastyBird/rabbitmq-plugin)
+[![Latest stable](https://img.shields.io/packagist/v/FastyBird/rabbitmq-plugin.svg?style=flat-square)](https://packagist.org/packages/FastyBird/rabbitmq-plugin)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
 
-## What is FastyBird node exchange library?
+## What is FastyBird Rabbit MQ plugin library?
 
-This is a [Nette framework](https://nette.org) extension which is implementing RabbitMQ data exchange for [FastyBird](https://fastybird.com) IoT microservices
+This is a [Nette framework](https://nette.org) extension which is implementing RabbitMQ data exchange for [FastyBird](https://www.fastybird.com) IoT services
 
 ## Installation
 
-The best way to install **fastybird/node-exchange** is using [Composer](http://getcomposer.org/):
+The best way to install **fastybird/rabbitmq-plugin** is using [Composer](http://getcomposer.org/):
 
 ```sh
-$ composer require fastybird/node-exchange
+$ composer require fastybird/rabbitmq-plugin
 ```
 
 ## Documentation
 
-Learn how to build microservices http api in [documentation](https://github.com/FastyBird/node-exchange/blob/master/docs/en/index.md).
+Learn how to build microservices http api in [documentation](https://github.com/FastyBird/rabbitmq-plugin/blob/master/docs/en/index.md).
 
 ***
-Homepage [http://www.fastybird.com](http://www.fastybird.com) and repository [https://github.com/FastyBird/node-exchange](https://github.com/FastyBird/node-exchange).
+Homepage [http://www.fastybird.com](http://www.fastybird.com) and repository [https://github.com/FastyBird/rabbitmq-plugin](https://github.com/FastyBird/rabbitmq-plugin).

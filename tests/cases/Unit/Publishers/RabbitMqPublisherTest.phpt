@@ -5,9 +5,9 @@ namespace Tests\Cases;
 use Bunny;
 use DateTimeImmutable;
 use FastyBird\DateTimeFactory;
-use FastyBird\NodeExchange;
-use FastyBird\NodeExchange\Connections;
-use FastyBird\NodeExchange\Publishers;
+use FastyBird\RabbitMqPlugin;
+use FastyBird\RabbitMqPlugin\Connections;
+use FastyBird\RabbitMqPlugin\Publishers;
 use Mockery;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
 use Psr\Log;
@@ -29,7 +29,7 @@ final class RabbitMqPublisherTest extends BaseMockeryTestCase
 			->withArgs(function ($message, $headers, $exchangeName): bool {
 				Assert::true(array_key_exists('origin', $headers));
 				Assert::same('origin.test', $headers['origin']);
-				Assert::same(NodeExchange\Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME, $exchangeName);
+				Assert::same(RabbitMqPlugin\Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME, $exchangeName);
 
 				return true;
 			})
@@ -52,7 +52,7 @@ final class RabbitMqPublisherTest extends BaseMockeryTestCase
 		$logger
 			->shouldReceive('info')
 			->withArgs(function ($message): bool {
-				Assert::same('[FB:EXCHANGE] Received message was pushed into data exchange', $message);
+				Assert::same('[FB:PLUGIN:RABBITMQ] Received message was pushed into data exchange', $message);
 
 				return true;
 			})

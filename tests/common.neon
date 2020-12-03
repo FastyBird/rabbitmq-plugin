@@ -1,10 +1,10 @@
 #
-# Node exchange DI configuration
+# Rabbit MQ plugin DI configuration
 #
 # @license		More in license.md
-# @copyright	https://fastybird.com
+# @copyright	https://www.fastybird.com
 # @author		Adam Kadlec <adam.kadlec@fastybird.com>
-# @package		FastyBird:NodeExchange!
+# @package		FastyBird:RabbitMqPlugin!
 # @subpackage	config
 # @since		0.1.0
 #
@@ -16,8 +16,8 @@ php:
 extensions:
 	fbDateTimeFactory	: FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
 
-nodeExchange:
-	origin: com.fastybird.test
+fbRabbitMqPlugin:
+	origin: com.fastybird.plugin
 	rabbitMQ:
 		queue:
 			name: testingQueueName

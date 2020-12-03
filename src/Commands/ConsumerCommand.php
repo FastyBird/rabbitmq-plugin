@@ -4,19 +4,19 @@
  * ConsumerCommand.php
  *
  * @license        More in license.md
- * @copyright      https://fastybird.com
+ * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeExchange!
+ * @package        FastyBird:RabbitMqPlugin!
  * @subpackage     Commands
  * @since          0.1.0
  *
  * @date           03.03.20
  */
 
-namespace FastyBird\NodeExchange\Commands;
+namespace FastyBird\RabbitMqPlugin\Commands;
 
-use FastyBird\NodeExchange;
-use FastyBird\NodeExchange\Exceptions;
+use FastyBird\RabbitMqPlugin;
+use FastyBird\RabbitMqPlugin\Exceptions;
 use Nette;
 use Psr\Log;
 use Symfony\Component\Console;
@@ -27,7 +27,7 @@ use Throwable;
 /**
  * Exchange messages consumer console command
  *
- * @package        FastyBird:NodeExchange!
+ * @package        FastyBird:RabbitMqPlugin!
  * @subpackage     Commands
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -37,14 +37,14 @@ final class ConsumerCommand extends Console\Command\Command
 
 	use Nette\SmartObject;
 
-	/** @var NodeExchange\Exchange */
+	/** @var RabbitMqPlugin\Exchange */
 	private $exchange;
 
 	/** @var Log\LoggerInterface */
 	private $logger;
 
 	public function __construct(
-		NodeExchange\Exchange $exchange,
+		RabbitMqPlugin\Exchange $exchange,
 		?Log\LoggerInterface $logger = null,
 		?string $name = null
 	) {
@@ -63,7 +63,7 @@ final class ConsumerCommand extends Console\Command\Command
 		parent::configure();
 
 		$this
-			->setName('fb:node:consumer:start')
+			->setName('fb:consumer:start')
 			->setDescription('Start exchange consumer.');
 	}
 
@@ -74,7 +74,7 @@ final class ConsumerCommand extends Console\Command\Command
 		Input\InputInterface $input,
 		Output\OutputInterface $output
 	): int {
-		$this->logger->info('[FB:EXCHANGE] Starting exchange queue consumer');
+		$this->logger->info('[FB:PLUGIN:RABBITMQ] Starting exchange queue consumer');
 
 		try {
 			$this->exchange->initialize();
@@ -82,7 +82,7 @@ final class ConsumerCommand extends Console\Command\Command
 
 		} catch (Exceptions\TerminateException $ex) {
 			// Log error action reason
-			$this->logger->warning('[FB:EXCHANGE] Stopping exchange consumer', [
+			$this->logger->warning('[FB:PLUGIN:RABBITMQ] Stopping exchange consumer', [
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code'    => $ex->getCode(),
@@ -96,7 +96,7 @@ final class ConsumerCommand extends Console\Command\Command
 
 		} catch (Throwable $ex) {
 			// Log error action reason
-			$this->logger->error('[FB:EXCHANGE] Stopping exchange consumer', [
+			$this->logger->error('[FB:PLUGIN:RABBITMQ] Stopping exchange consumer', [
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code'    => $ex->getCode(),

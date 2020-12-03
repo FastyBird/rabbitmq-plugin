@@ -4,28 +4,27 @@
  * ExchangeConsumer.php
  *
  * @license        More in license.md
- * @copyright      https://fastybird.com
+ * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeExchange!
+ * @package        FastyBird:RabbitMqPlugin!
  * @subpackage     Consumers
  * @since          0.1.0
  *
  * @date           08.03.20
  */
 
-namespace FastyBird\NodeExchange\Consumers;
+namespace FastyBird\RabbitMqPlugin\Consumers;
 
 use Bunny;
-use FastyBird\NodeExchange\Exceptions;
+use FastyBird\RabbitMqPlugin\Exceptions;
 use Nette;
-use Psr\Log;
 use SplObjectStorage;
 use Throwable;
 
 /**
  * Exchange message consumer container
  *
- * @package        FastyBird:NodeExchange!
+ * @package        FastyBird:RabbitMqPlugin!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -41,14 +40,8 @@ final class ExchangeConsumer implements IExchangeConsumer
 	/** @var SplObjectStorage */
 	private $handlers;
 
-	/** @var Log\LoggerInterface */
-	private $logger;
-
-	public function __construct(
-		?Log\LoggerInterface $logger = null
-	) {
-		$this->logger = $logger ?? new Log\NullLogger();
-
+	public function __construct()
+	{
 		$this->handlers = new SplObjectStorage();
 	}
 
@@ -104,20 +97,7 @@ final class ExchangeConsumer implements IExchangeConsumer
 
 		/** @var IMessageHandler $handler */
 		foreach ($this->handlers as $handler) {
-			$handlerResult = $this->processMessage($message, $handler);
-
-			if ($handlerResult) {
-				$result = $handlerResult;
-
-			} else {
-				$this->logger->debug('[FB:EXCHANGE] Received message could not be handled', [
-					'message' => [
-						'routingKey' => $message->routingKey,
-						'headers'    => $message->headers,
-						'body'       => $message->content,
-					],
-				]);
-			}
+			$result = $this->processMessage($message, $handler);
 		}
 
 		if ($result) {

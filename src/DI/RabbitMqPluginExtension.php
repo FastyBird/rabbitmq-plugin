@@ -1,25 +1,25 @@
 <?php declare(strict_types = 1);
 
 /**
- * NodeExchangeExtension.php
+ * RabbitMqPluginExtension.php
  *
  * @license        More in license.md
- * @copyright      https://fastybird.com
+ * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeExchange!
+ * @package        FastyBird:RabbitMqPlugin!
  * @subpackage     DI
  * @since          0.1.0
  *
  * @date           19.06.20
  */
 
-namespace FastyBird\NodeExchange\DI;
+namespace FastyBird\RabbitMqPlugin\DI;
 
-use FastyBird\NodeExchange;
-use FastyBird\NodeExchange\Commands;
-use FastyBird\NodeExchange\Connections;
-use FastyBird\NodeExchange\Consumers;
-use FastyBird\NodeExchange\Publishers;
+use FastyBird\RabbitMqPlugin;
+use FastyBird\RabbitMqPlugin\Commands;
+use FastyBird\RabbitMqPlugin\Connections;
+use FastyBird\RabbitMqPlugin\Consumers;
+use FastyBird\RabbitMqPlugin\Publishers;
 use Nette;
 use Nette\DI;
 use Nette\Schema;
@@ -28,12 +28,12 @@ use stdClass;
 /**
  * Message exchange extension container
  *
- * @package        FastyBird:NodeExchange!
+ * @package        FastyBird:RabbitMqPlugin!
  * @subpackage     DI
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class NodeExchangeExtension extends DI\CompilerExtension
+class RabbitMqPluginExtension extends DI\CompilerExtension
 {
 
 	/**
@@ -92,7 +92,7 @@ class NodeExchangeExtension extends DI\CompilerExtension
 			->setArgument('origin', $configuration->origin);
 
 		$builder->addDefinition(null)
-			->setType(NodeExchange\Exchange::class)
+			->setType(RabbitMqPlugin\Exchange::class)
 			->setArgument('routingKeys', $configuration->rabbitMQ->routing->keys);
 
 		$builder->addDefinition(null)
@@ -132,13 +132,13 @@ class NodeExchangeExtension extends DI\CompilerExtension
 	 */
 	public static function register(
 		Nette\Configurator $config,
-		string $extensionName = 'nodeExchange'
+		string $extensionName = 'fbRabbitMqPlugin'
 	): void {
 		$config->onCompile[] = function (
 			Nette\Configurator $config,
 			DI\Compiler $compiler
 		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new NodeExchangeExtension());
+			$compiler->addExtension($extensionName, new RabbitMqPluginExtension());
 		};
 	}
 

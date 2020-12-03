@@ -4,20 +4,20 @@
  * Exchange.php
  *
  * @license        More in license.md
- * @copyright      https://fastybird.com
+ * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeExchange!
+ * @package        FastyBird:RabbitMqPlugin!
  * @subpackage     common
  * @since          0.1.0
  *
  * @date           10.07.20
  */
 
-namespace FastyBird\NodeExchange;
+namespace FastyBird\RabbitMqPlugin;
 
 use Bunny;
 use Closure;
-use FastyBird\NodeExchange\Exceptions\InvalidStateException;
+use FastyBird\RabbitMqPlugin\Exceptions\InvalidStateException;
 use Nette;
 use React\Promise;
 use Throwable;
@@ -25,7 +25,7 @@ use Throwable;
 /**
  * RabbitMQ exchange builder
  *
- * @package        FastyBird:NodeExchange!
+ * @package        FastyBird:RabbitMqPlugin!
  * @subpackage     common
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

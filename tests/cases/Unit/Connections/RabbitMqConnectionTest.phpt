@@ -2,7 +2,7 @@
 
 namespace Tests\Cases;
 
-use FastyBird\NodeExchange\Connections;
+use FastyBird\RabbitMqPlugin\Connections;
 use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';

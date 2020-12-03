@@ -4,19 +4,19 @@
  * RabbitMqConnection.php
  *
  * @license        More in license.md
- * @copyright      https://fastybird.com
+ * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeExchange!
+ * @package        FastyBird:RabbitMqPlugin!
  * @subpackage     Connections
  * @since          0.1.0
  *
  * @date           08.03.20
  */
 
-namespace FastyBird\NodeExchange\Connections;
+namespace FastyBird\RabbitMqPlugin\Connections;
 
 use Bunny;
-use FastyBird\NodeExchange\Exceptions;
+use FastyBird\RabbitMqPlugin\Exceptions;
 use Nette;
 use Psr\Log;
 use React\EventLoop;
@@ -25,7 +25,7 @@ use Throwable;
 /**
  * RabbitMQ connection configuration
  *
- * @package        FastyBird:NodeExchange!
+ * @package        FastyBird:RabbitMqPlugin!
  * @subpackage     Connections
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -150,7 +150,7 @@ final class RabbitMqConnection implements IRabbitMqConnection
 
 		} catch (Throwable $ex) {
 			// Log error action reason
-			$this->logger->error('[FB:EXCHANGE] Could not connect to bunny', [
+			$this->logger->error('[FB:PLUGIN:RABBITMQ] Could not connect to bunny', [
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code'    => $ex->getCode(),

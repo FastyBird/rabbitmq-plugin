@@ -3,12 +3,11 @@
 namespace Tests\Cases;
 
 use Bunny;
-use FastyBird\NodeExchange\Consumers;
-use FastyBird\NodeExchange\Exceptions;
+use FastyBird\RabbitMqPlugin\Consumers;
+use FastyBird\RabbitMqPlugin\Exceptions;
 use Mockery;
 use Nette\Utils;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
-use Psr\Log;
 use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';
@@ -21,11 +20,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 
 	public function testEmptyHandlers(): void
 	{
-		$logger = Mockery::mock(Log\LoggerInterface::class);
-
-		$consumer = new Consumers\ExchangeConsumer(
-			$logger
-		);
+		$consumer = new Consumers\ExchangeConsumer();
 
 		$message = new Bunny\Message(
 			'consumerTag',
@@ -41,26 +36,18 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 	}
 
 	/**
-	 * @throws FastyBird\NodeExchange\Exceptions\InvalidStateException
+	 * @throws FastyBird\RabbitMqPlugin\Exceptions\InvalidStateException
 	 */
 	public function testNotSetQueueName(): void
 	{
-		$logger = Mockery::mock(Log\LoggerInterface::class);
-
-		$consumer = new Consumers\ExchangeConsumer(
-			$logger
-		);
+		$consumer = new Consumers\ExchangeConsumer();
 
 		$consumer->getQueueName();
 	}
 
 	public function testSetQueueName(): void
 	{
-		$logger = Mockery::mock(Log\LoggerInterface::class);
-
-		$consumer = new Consumers\ExchangeConsumer(
-			$logger
-		);
+		$consumer = new Consumers\ExchangeConsumer();
 
 		$consumer->setQueueName('queueNameSet');
 
@@ -82,11 +69,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			throw new Exceptions\InvalidStateException('Test data could not be prepared');
 		}
 
-		$logger = Mockery::mock(Log\LoggerInterface::class);
-
-		$consumer = new Consumers\ExchangeConsumer(
-			$logger
-		);
+		$consumer = new Consumers\ExchangeConsumer();
 
 		$handler = Mockery::mock(Consumers\IMessageHandler::class);
 		$handler
@@ -133,11 +116,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			throw new Exceptions\InvalidStateException('Test data could not be prepared');
 		}
 
-		$logger = Mockery::mock(Log\LoggerInterface::class);
-
-		$consumer = new Consumers\ExchangeConsumer(
-			$logger
-		);
+		$consumer = new Consumers\ExchangeConsumer();
 
 		$handler = Mockery::mock(Consumers\IMessageHandler::class);
 		$handler
@@ -184,11 +163,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			throw new Exceptions\InvalidStateException('Test data could not be prepared');
 		}
 
-		$logger = Mockery::mock(Log\LoggerInterface::class);
-
-		$consumer = new Consumers\ExchangeConsumer(
-			$logger
-		);
+		$consumer = new Consumers\ExchangeConsumer();
 
 		$handler = Mockery::mock(Consumers\IMessageHandler::class);
 		$handler
@@ -247,24 +222,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			$body
 		);
 
-		$logger = Mockery::mock(Log\LoggerInterface::class);
-		$logger
-			->shouldReceive('debug')
-			->withArgs([
-				'[FB:EXCHANGE] Received message could not be handled',
-				[
-					'message' => [
-						'routingKey' => $message->routingKey,
-						'headers'    => $message->headers,
-						'body'       => $message->content,
-					],
-				],
-			])
-			->times(1);
-
-		$consumer = new Consumers\ExchangeConsumer(
-			$logger
-		);
+		$consumer = new Consumers\ExchangeConsumer();
 
 		$handler = Mockery::mock(Consumers\IMessageHandler::class);
 		$handler

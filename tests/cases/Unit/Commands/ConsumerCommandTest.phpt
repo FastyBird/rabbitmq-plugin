@@ -2,9 +2,9 @@
 
 namespace Tests\Cases;
 
-use FastyBird\NodeExchange\Commands;
-use FastyBird\NodeExchange\Exceptions;
-use FastyBird\NodeExchange\Exchange;
+use FastyBird\RabbitMqPlugin\Commands;
+use FastyBird\RabbitMqPlugin\Exceptions;
+use FastyBird\RabbitMqPlugin\Exchange;
 use Mockery;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
 use Psr\Log;
@@ -33,7 +33,7 @@ final class ConsumerCommandTest extends BaseMockeryTestCase
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 		$logger
 			->shouldReceive('info')
-			->withArgs(['[FB:EXCHANGE] Starting exchange queue consumer'])
+			->withArgs(['[FB:PLUGIN:RABBITMQ] Starting exchange queue consumer'])
 			->times(1);
 
 		$application = new Application();
@@ -42,7 +42,7 @@ final class ConsumerCommandTest extends BaseMockeryTestCase
 			$logger
 		));
 
-		$command = $application->get('fb:node:consumer:start');
+		$command = $application->get('fb:consumer:start');
 
 		$commandTester = new CommandTester($command);
 		$commandTester->execute([]);
@@ -69,18 +69,18 @@ final class ConsumerCommandTest extends BaseMockeryTestCase
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 		$logger
 			->shouldReceive('info')
-			->withArgs(['[FB:EXCHANGE] Starting exchange queue consumer'])
+			->withArgs(['[FB:PLUGIN:RABBITMQ] Starting exchange queue consumer'])
 			->times(1)
 			->getMock()
 			->shouldReceive('error')
 			->withArgs([
-				'[FB:EXCHANGE] Stopping exchange consumer',
+				'[FB:PLUGIN:RABBITMQ] Stopping exchange consumer',
 				[
 					'exception' => [
 						'message' => $exception->getMessage(),
 						'code'    => $exception->getCode(),
 					],
-					'cmd'       => 'fb:node:consumer:start',
+					'cmd'       => 'fb:consumer:start',
 				],
 			])
 			->times(1);
@@ -91,7 +91,7 @@ final class ConsumerCommandTest extends BaseMockeryTestCase
 			$logger
 		));
 
-		$command = $application->get('fb:node:consumer:start');
+		$command = $application->get('fb:consumer:start');
 
 		$commandTester = new CommandTester($command);
 		$commandTester->execute([]);

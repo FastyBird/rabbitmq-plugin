@@ -4,7 +4,7 @@ namespace Tests\Cases;
 
 use DateTimeImmutable;
 use FastyBird\DateTimeFactory;
-use FastyBird\NodeExchange;
+use FastyBird\RabbitMqPlugin;
 use Mockery;
 use Nette;
 use Nette\DI;
@@ -57,7 +57,7 @@ abstract class BaseTestCase extends BaseMockeryTestCase
 			$config->addConfig($additionalConfig);
 		}
 
-		NodeExchange\DI\NodeExchangeExtension::register($config);
+		RabbitMqPlugin\DI\RabbitMqPluginExtension::register($config);
 
 		return $config->createContainer();
 	}

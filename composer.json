@@ -1,7 +1,7 @@
 {
   "name" : "fastybird/node-exchange",
   "type" : "library",
-  "description" : "FastyBird data exchange for nodes",
+  "description" : "FastyBird RabbitMQ plugin",
   "keywords" : [
     "fastybird",
     "fb",
@@ -13,7 +13,7 @@
     "rabbit"
   ],
 
-  "homepage" : "https://fastybird.com",
+  "homepage" : "https://www.fastybird.com",
 
   "license" : "Apache-2.0",
 
@@ -21,7 +21,7 @@
     {
       "name" : "FastyBird s.r.o.",
       "email" : "info@fastybird.com",
-      "homepage" : "https://fastybird.com/"
+      "homepage" : "https://www.fastybird.com/"
     },
     {
       "name" : "Adam Kadlec",
@@ -59,7 +59,7 @@
 
   "autoload" : {
     "psr-4" : {
-      "FastyBird\\NodeExchange\\" : "src/"
+      "FastyBird\\RabbitMqPlugin\\" : "src/"
     }
   },
 
