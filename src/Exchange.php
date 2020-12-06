@@ -130,7 +130,8 @@ final class Exchange
 			})
 			->then(function (Bunny\Channel $channel): void {
 				$this->processChannel($channel);
-			});
+			})
+			->done();
 	}
 
 	/**
