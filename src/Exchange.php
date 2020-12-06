@@ -109,7 +109,7 @@ final class Exchange
 
 		$this->client = $this->connection->getAsyncClient();
 
-		$this->client
+		$promise = $this->client
 			->connect()
 			->then(function (Bunny\Async\Client $client) {
 				return $client->channel();
@@ -119,7 +119,7 @@ final class Exchange
 
 				$qosResult = $channel->qos(0, 5);
 
-				if ($qosResult instanceof Promise\PromiseInterface) {
+				if ($qosResult instanceof Promise\ExtendedPromiseInterface) {
 					return $qosResult
 						->then(function () use ($channel): Bunny\Channel {
 							return $channel;
@@ -130,8 +130,11 @@ final class Exchange
 			})
 			->then(function (Bunny\Channel $channel): void {
 				$this->processChannel($channel);
-			})
-			->done();
+			});
+
+		if ($promise instanceof Promise\ExtendedPromiseInterface) {
+			$promise->done();
+		}
 	}
 
 	/**
