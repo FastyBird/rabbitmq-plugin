@@ -25,4 +25,4 @@ $ composer require fastybird/rabbitmq-plugin
 Learn how to consume & publish messages in [documentation](https://github.com/FastyBird/rabbitmq-plugin/blob/master/docs/en/index.md).
 
 ***
-Homepage [http://www.fastybird.com](http://www.fastybird.com) and repository [https://github.com/FastyBird/rabbitmq-plugin](https://github.com/FastyBird/rabbitmq-plugin).
+Homepage [https://www.fastybird.com](https://www.fastybird.com) and repository [https://github.com/FastyBird/rabbitmq-plugin](https://github.com/FastyBird/rabbitmq-plugin).

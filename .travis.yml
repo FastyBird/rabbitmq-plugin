@@ -1,9 +1,8 @@
 language: php
 
 php:
-  - 7.3
   - 7.4
-  - nightly
+  - 8.0
 
 before_install:
   # Turn off XDebug
@@ -45,8 +44,7 @@ jobs:
 
   allow_failures:
     - stage: Test Coverage
-    - php: 7.4snapshot
-    - php: nightly
+    - php: 8.0
 
 sudo: false
 

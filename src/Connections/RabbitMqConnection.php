@@ -87,41 +87,86 @@ final class RabbitMqConnection implements IRabbitMqConnection
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getHost(): string
+	public function getAsyncClient(bool $force = false): Bunny\Async\Client
 	{
-		return $this->host;
+		if ($this->eventLoop === null) {
+			throw new Exceptions\InvalidStateException('Event loop is not configured');
+		}
+
+		if ($this->asyncClient !== null && !$force) {
+			return $this->asyncClient;
+		}
+
+		$this->asyncClient = new Bunny\Async\Client($this->eventLoop, [
+			'host'      => $this->getHost(),
+			'port'      => $this->getPort(),
+			'vhost'     => $this->getVhost(),
+			'user'      => $this->getUsername(),
+			'password'  => $this->getPassword(),
+			'heartbeat' => 30,
+		]);
+
+		return $this->asyncClient;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getPort(): int
+	public function getChannel(): Bunny\Channel
 	{
-		return $this->port;
+		if ($this->channel === null) {
+			$this->channel = $this->createChannel();
+		}
+
+		return $this->channel;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getVhost(): string
+	public function setChannel(Bunny\Channel $channel): void
 	{
-		return $this->vhost;
+		$this->channel = $channel;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @return Bunny\Channel
 	 */
-	public function getUsername(): string
+	private function createChannel(): Bunny\Channel
 	{
-		return $this->username;
-	}
+		if ($this->channel !== null) {
+			return $this->channel;
+		}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getPassword(): string
-	{
-		return $this->password;
+		$bunny = $this->getClient();
+
+		$channel = null;
+
+		try {
+			$channel = $bunny->channel();
+
+			if (!$channel instanceof Bunny\Channel) {
+				throw new Exceptions\InvalidStateException('Bunny channel could not be opened');
+			}
+
+		} catch (Bunny\Exception\ClientException $ex) {
+			if ($ex->getMessage() !== 'Broken pipe or closed connection.') {
+				throw new Exceptions\InvalidStateException($ex->getMessage(), $ex->getCode(), $ex);
+			}
+
+			/**
+			 * Try to reconnect
+			 */
+			$bunny = $this->getClient(true);
+
+			$channel = $bunny->channel();
+
+			if (!$channel instanceof Bunny\Channel) {
+				throw new Exceptions\InvalidStateException('Bunny channel could not be opened');
+			}
+		}
+
+		return $channel;
 	}
 
 	/**
@@ -164,86 +209,41 @@ final class RabbitMqConnection implements IRabbitMqConnection
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getAsyncClient(bool $force = false): Bunny\Async\Client
+	public function getHost(): string
 	{
-		if ($this->eventLoop === null) {
-			throw new Exceptions\InvalidStateException('Event loop is not configured');
-		}
-
-		if ($this->asyncClient !== null && !$force) {
-			return $this->asyncClient;
-		}
-
-		$this->asyncClient = new Bunny\Async\Client($this->eventLoop, [
-			'host'      => $this->getHost(),
-			'port'      => $this->getPort(),
-			'vhost'     => $this->getVhost(),
-			'user'      => $this->getUsername(),
-			'password'  => $this->getPassword(),
-			'heartbeat' => 30,
-		]);
-
-		return $this->asyncClient;
+		return $this->host;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setChannel(Bunny\Channel $channel): void
+	public function getPort(): int
 	{
-		$this->channel = $channel;
+		return $this->port;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getChannel(): Bunny\Channel
+	public function getVhost(): string
 	{
-		if ($this->channel === null) {
-			$this->channel = $this->createChannel();
-		}
-
-		return $this->channel;
+		return $this->vhost;
 	}
 
 	/**
-	 * @return Bunny\Channel
+	 * {@inheritDoc}
 	 */
-	private function createChannel(): Bunny\Channel
+	public function getUsername(): string
 	{
-		if ($this->channel !== null) {
-			return $this->channel;
-		}
+		return $this->username;
+	}
 
-		$bunny = $this->getClient();
-
-		$channel = null;
-
-		try {
-			$channel = $bunny->channel();
-
-			if (!$channel instanceof Bunny\Channel) {
-				throw new Exceptions\InvalidStateException('Bunny channel could not be opened');
-			}
-
-		} catch (Bunny\Exception\ClientException $ex) {
-			if ($ex->getMessage() !== 'Broken pipe or closed connection.') {
-				throw new Exceptions\InvalidStateException($ex->getMessage(), $ex->getCode(), $ex);
-			}
-
-			/**
-			 * Try to reconnect
-			 */
-			$bunny = $this->getClient(true);
-
-			$channel = $bunny->channel();
-
-			if (!$channel instanceof Bunny\Channel) {
-				throw new Exceptions\InvalidStateException('Bunny channel could not be opened');
-			}
-		}
-
-		return $channel;
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPassword(): string
+	{
+		return $this->password;
 	}
 
 }

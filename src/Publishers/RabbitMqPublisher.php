@@ -94,7 +94,8 @@ final class RabbitMqPublisher implements IRabbitMqPublisher
 				$message,
 				[
 					'origin'  => $this->origin,
-					'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
+					'created' => $this->dateTimeFactory->getNow()
+						->format(DATE_ATOM),
 				],
 				RabbitMqPlugin\Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME,
 				$routingKey
@@ -107,7 +108,8 @@ final class RabbitMqPublisher implements IRabbitMqPublisher
 						'routingKey' => $routingKey,
 						'headers'    => [
 							'origin'  => $this->origin,
-							'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
+							'created' => $this->dateTimeFactory->getNow()
+								->format(DATE_ATOM),
 						],
 						'body'       => $message,
 					],
@@ -118,7 +120,8 @@ final class RabbitMqPublisher implements IRabbitMqPublisher
 						'routingKey' => $routingKey,
 						'headers'    => [
 							'origin'  => $this->origin,
-							'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
+							'created' => $this->dateTimeFactory->getNow()
+								->format(DATE_ATOM),
 						],
 						'body'       => $message,
 					],
@@ -134,7 +137,8 @@ final class RabbitMqPublisher implements IRabbitMqPublisher
 								'routingKey' => $routingKey,
 								'headers'    => [
 									'origin'  => $this->origin,
-									'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
+									'created' => $this->dateTimeFactory->getNow()
+										->format(DATE_ATOM),
 								],
 								'body'       => $message,
 							],
@@ -146,7 +150,8 @@ final class RabbitMqPublisher implements IRabbitMqPublisher
 								'routingKey' => $routingKey,
 								'headers'    => [
 									'origin'  => $this->origin,
-									'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
+									'created' => $this->dateTimeFactory->getNow()
+										->format(DATE_ATOM),
 								],
 								'body'       => $message,
 							],

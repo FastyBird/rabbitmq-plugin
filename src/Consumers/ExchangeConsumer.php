@@ -48,14 +48,6 @@ final class ExchangeConsumer implements IExchangeConsumer
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setQueueName(string $queueName): void
-	{
-		$this->queueName = $queueName;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getQueueName(): string
 	{
 		if ($this->queueName === null) {
@@ -63,6 +55,14 @@ final class ExchangeConsumer implements IExchangeConsumer
 		}
 
 		return $this->queueName;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function setQueueName(string $queueName): void
+	{
+		$this->queueName = $queueName;
 	}
 
 	/**

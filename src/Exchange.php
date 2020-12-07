@@ -97,77 +97,6 @@ final class Exchange
 	}
 
 	/**
-	 * @return void
-	 *
-	 * @throws Throwable
-	 */
-	public function initializeAsync(): void
-	{
-		if (!$this->consumer->hasHandlers()) {
-			throw new InvalidStateException('No consumer handler registered. Exchange could not be initialized');
-		}
-
-		$this->client = $this->connection->getAsyncClient();
-
-		$promise = $this->client
-			->connect()
-			->then(function (Bunny\Async\Client $client) {
-				return $client->channel();
-			})
-			->then(function (Bunny\Channel $channel): Promise\PromiseInterface {
-				$this->connection->setChannel($channel);
-
-				$qosResult = $channel->qos(0, 5);
-
-				if ($qosResult instanceof Promise\ExtendedPromiseInterface) {
-					return $qosResult
-						->then(function () use ($channel): Bunny\Channel {
-							return $channel;
-						});
-				}
-
-				throw new Exceptions\InvalidStateException('RabbitMQ QoS could not be configured');
-			})
-			->then(function (Bunny\Channel $channel): void {
-				$this->processChannel($channel);
-			});
-
-		if ($promise instanceof Promise\ExtendedPromiseInterface) {
-			$promise->done();
-		}
-	}
-
-	/**
-	 * @return void
-	 */
-	public function run(): void
-	{
-		if ($this->client === null) {
-			throw new Exceptions\InvalidStateException('Exchange is not initialized');
-		}
-
-		if ($this->client instanceof Bunny\Client) {
-			$this->client->run();
-
-		} else {
-			throw new Exceptions\InvalidStateException('Exchange have to be started via React/EventLoop service');
-		}
-	}
-
-	/**
-	 * @return void
-	 */
-	public function stop(): void
-	{
-		if ($this->client instanceof Bunny\Client) {
-			$this->client->stop();
-
-		} elseif ($this->client instanceof Bunny\Async\Client) {
-			throw new Exceptions\InvalidStateException('Exchange have to be stopped via React/EventLoop service');
-		}
-	}
-
-	/**
 	 * @param Bunny\Channel $channel
 	 *
 	 * @return void
@@ -243,6 +172,77 @@ final class Exchange
 			},
 			$this->consumer->getQueueName()
 		);
+	}
+
+	/**
+	 * @return void
+	 *
+	 * @throws Throwable
+	 */
+	public function initializeAsync(): void
+	{
+		if (!$this->consumer->hasHandlers()) {
+			throw new InvalidStateException('No consumer handler registered. Exchange could not be initialized');
+		}
+
+		$this->client = $this->connection->getAsyncClient();
+
+		$promise = $this->client
+			->connect()
+			->then(function (Bunny\Async\Client $client) {
+				return $client->channel();
+			})
+			->then(function (Bunny\Channel $channel): Promise\PromiseInterface {
+				$this->connection->setChannel($channel);
+
+				$qosResult = $channel->qos(0, 5);
+
+				if ($qosResult instanceof Promise\ExtendedPromiseInterface) {
+					return $qosResult
+						->then(function () use ($channel): Bunny\Channel {
+							return $channel;
+						});
+				}
+
+				throw new Exceptions\InvalidStateException('RabbitMQ QoS could not be configured');
+			})
+			->then(function (Bunny\Channel $channel): void {
+				$this->processChannel($channel);
+			});
+
+		if ($promise instanceof Promise\ExtendedPromiseInterface) {
+			$promise->done();
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	public function run(): void
+	{
+		if ($this->client === null) {
+			throw new Exceptions\InvalidStateException('Exchange is not initialized');
+		}
+
+		if ($this->client instanceof Bunny\Client) {
+			$this->client->run();
+
+		} else {
+			throw new Exceptions\InvalidStateException('Exchange have to be started via React/EventLoop service');
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	public function stop(): void
+	{
+		if ($this->client instanceof Bunny\Client) {
+			$this->client->stop();
+
+		} elseif ($this->client instanceof Bunny\Async\Client) {
+			throw new Exceptions\InvalidStateException('Exchange have to be stopped via React/EventLoop service');
+		}
 	}
 
 }

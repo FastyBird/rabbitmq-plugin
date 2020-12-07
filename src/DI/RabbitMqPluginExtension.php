@@ -37,25 +37,47 @@ class RabbitMqPluginExtension extends DI\CompilerExtension
 {
 
 	/**
+	 * @param Nette\Configurator $config
+	 * @param string $extensionName
+	 *
+	 * @return void
+	 */
+	public static function register(
+		Nette\Configurator $config,
+		string $extensionName = 'fbRabbitMqPlugin'
+	): void {
+		$config->onCompile[] = function (
+			Nette\Configurator $config,
+			DI\Compiler $compiler
+		) use ($extensionName): void {
+			$compiler->addExtension($extensionName, new RabbitMqPluginExtension());
+		};
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function getConfigSchema(): Schema\Schema
 	{
 		return Schema\Expect::structure([
-			'origin'   => Schema\Expect::string()->required(),
+			'origin'   => Schema\Expect::string()
+				->required(),
 			'rabbitMQ' => Schema\Expect::structure([
 				'connection' => Schema\Expect::structure([
-					'host'     => Schema\Expect::string()->default('127.0.0.1'),
+					'host'     => Schema\Expect::string()
+						->default('127.0.0.1'),
 					'port'     => Schema\Expect::int(5672),
 					'vhost'    => Schema\Expect::string('/'),
 					'username' => Schema\Expect::string('guest'),
 					'password' => Schema\Expect::string('guest'),
 				]),
 				'queue'      => Schema\Expect::structure([
-					'name' => Schema\Expect::string()->required(),
+					'name' => Schema\Expect::string()
+						->required(),
 				]),
 				'routing'    => Schema\Expect::structure([
-					'keys' => Schema\Expect::array([])->items(Schema\Expect::string()),
+					'keys' => Schema\Expect::array([])
+						->items(Schema\Expect::string()),
 				]),
 			]),
 		]);
@@ -122,24 +144,6 @@ class RabbitMqPluginExtension extends DI\CompilerExtension
 				$consumerHandlersService,
 			]);
 		}
-	}
-
-	/**
-	 * @param Nette\Configurator $config
-	 * @param string $extensionName
-	 *
-	 * @return void
-	 */
-	public static function register(
-		Nette\Configurator $config,
-		string $extensionName = 'fbRabbitMqPlugin'
-	): void {
-		$config->onCompile[] = function (
-			Nette\Configurator $config,
-			DI\Compiler $compiler
-		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new RabbitMqPluginExtension());
-		};
 	}
 
 }
