@@ -35,10 +35,10 @@ final class ExchangeConsumer implements IExchangeConsumer
 	use Nette\SmartObject;
 
 	/** @var string|null */
-	private $queueName = null;
+	private ?string $queueName = null;
 
 	/** @var SplObjectStorage */
-	private $handlers;
+	private SplObjectStorage $handlers;
 
 	public function __construct()
 	{

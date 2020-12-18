@@ -36,34 +36,34 @@ final class RabbitMqConnection implements IRabbitMqConnection
 	use Nette\SmartObject;
 
 	/** @var string */
-	private $host;
+	private string $host;
 
 	/** @var int */
-	private $port;
+	private int $port;
 
 	/** @var string */
-	private $vhost;
+	private string $vhost;
 
 	/** @var string */
-	private $username;
+	private string $username;
 
 	/** @var string */
-	private $password;
+	private string $password;
 
 	/** @var Bunny\Client|null */
-	private $client = null;
+	private ?Bunny\Client $client = null;
 
 	/** @var Bunny\Channel|null */
-	private $channel = null;
+	private ?Bunny\Channel $channel = null;
 
 	/** @var Bunny\Async\Client|null */
-	private $asyncClient = null;
+	private ?Bunny\Async\Client $asyncClient = null;
 
 	/** @var EventLoop\LoopInterface|null */
-	private $eventLoop;
+	private ?EventLoop\LoopInterface $eventLoop;
 
 	/** @var Log\LoggerInterface */
-	private $logger;
+	private Log\LoggerInterface $logger;
 
 	public function __construct(
 		?Log\LoggerInterface $logger = null,

@@ -37,16 +37,16 @@ final class RabbitMqPublisher implements IRabbitMqPublisher
 	use Nette\SmartObject;
 
 	/** @var string */
-	private $origin;
+	private string $origin;
 
 	/** @var Connections\IRabbitMqConnection */
-	private $connection;
+	private Connections\IRabbitMqConnection $connection;
 
 	/** @var DateTimeFactory\DateTimeFactory */
-	private $dateTimeFactory;
+	private DateTimeFactory\DateTimeFactory $dateTimeFactory;
 
 	/** @var Log\LoggerInterface */
-	private $logger;
+	private Log\LoggerInterface $logger;
 
 	public function __construct(
 		string $origin,

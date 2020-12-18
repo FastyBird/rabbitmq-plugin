@@ -38,10 +38,10 @@ final class ConsumerCommand extends Console\Command\Command
 	use Nette\SmartObject;
 
 	/** @var RabbitMqPlugin\Exchange */
-	private $exchange;
+	private RabbitMqPlugin\Exchange $exchange;
 
 	/** @var Log\LoggerInterface */
-	private $logger;
+	private Log\LoggerInterface $logger;
 
 	public function __construct(
 		RabbitMqPlugin\Exchange $exchange,
