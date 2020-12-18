@@ -1,4 +1,4 @@
-# FastyBird Rabbit MQ plugin library
+# FastyBird Rabbit MQ plugin
 
 [![Build Status](https://img.shields.io/travis/com/FastyBird/rabbitmq-plugin.svg?style=flat-square)](https://travis-ci.com/FastyBird/rabbitmq-plugin)
 [![Code coverage](https://img.shields.io/coveralls/FastyBird/rabbitmq-plugin.svg?style=flat-square)](https://coveralls.io/r/FastyBird/rabbitmq-plugin)
@@ -8,9 +8,9 @@
 [![Latest stable](https://img.shields.io/packagist/v/FastyBird/rabbitmq-plugin.svg?style=flat-square)](https://packagist.org/packages/FastyBird/rabbitmq-plugin)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
 
-## What is FastyBird Rabbit MQ plugin library?
+## What is FastyBird Rabbit MQ plugin?
 
-This is a [Nette framework](https://nette.org) extension which is implementing RabbitMQ data exchange for [FastyBird](https://www.fastybird.com) IoT services
+This is a [Nette framework](https://nette.org) extension which is implementing [RabbitMQ](https://www.rabbitmq.com) data exchange for [FastyBird](https://www.fastybird.com) IoT services
 
 ## Installation
 
