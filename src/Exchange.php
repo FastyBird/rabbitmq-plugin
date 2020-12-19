@@ -17,8 +17,10 @@ namespace FastyBird\RabbitMqPlugin;
 
 use Bunny;
 use Closure;
+use FastyBird\ModulesMetadata\Loaders as ModulesMetadataLoaders;
 use FastyBird\RabbitMqPlugin\Exceptions\InvalidStateException;
 use Nette;
+use Nette\Utils;
 use React\Promise;
 use Throwable;
 
@@ -47,8 +49,11 @@ final class Exchange
 	/** @var Closure[] */
 	public array $onAfterConsumeMessage = [];
 
-	/** @var string[] */
-	private array $routingKeys;
+	/** @var string */
+	private string $origin;
+
+	/** @var string[]|null */
+	private ?array $routingKeys;
 
 	/** @var int */
 	private int $consumedMessagesCnt = 0;
@@ -59,6 +64,9 @@ final class Exchange
 	/** @var Consumers\IExchangeConsumer */
 	private Consumers\IExchangeConsumer $consumer;
 
+	/** @var ModulesMetadataLoaders\IMetadataLoader */
+	private ModulesMetadataLoaders\IMetadataLoader $metadataLoader;
+
 	/** @var Bunny\Client|null */
 	private ?Bunny\Client $client = null;
 
@@ -66,17 +74,25 @@ final class Exchange
 	private ?Bunny\Async\Client $asyncClient = null;
 
 	/**
+	 * @param string $origin
 	 * @param Connections\IRabbitMqConnection $connection
 	 * @param Consumers\IExchangeConsumer $consumer
+	 * @param ModulesMetadataLoaders\IMetadataLoader $metadataLoader
 	 * @param string[] $routingKeys
 	 */
 	public function __construct(
+		string $origin,
 		Connections\IRabbitMqConnection $connection,
 		Consumers\IExchangeConsumer $consumer,
-		array $routingKeys = []
+		ModulesMetadataLoaders\IMetadataLoader $metadataLoader,
+		?array $routingKeys = null
 	) {
+		$this->origin = $origin;
+
 		$this->connection = $connection;
 		$this->consumer = $consumer;
+
+		$this->metadataLoader = $metadataLoader;
 
 		$this->routingKeys = $routingKeys;
 	}
@@ -148,6 +164,15 @@ final class Exchange
 	private function processChannel(
 		Bunny\Channel $channel
 	): void {
+		$autoDeleteQueue = false;
+		$queueName = $this->consumer->getQueueName();
+
+		if ($queueName === null) {
+			$queueName = 'rabbit.plugin_' . $this->origin;
+
+			$autoDeleteQueue = true;
+		}
+
 		// Create exchange
 		$channel
 			// Try to create exchange
@@ -160,18 +185,45 @@ final class Exchange
 
 		// Create queue to connect to...
 		$channel->queueDeclare(
-			$this->consumer->getQueueName(),
+			$queueName,
 			false,
-			true
+			true,
+			false,
+			$autoDeleteQueue
 		);
 
 		// ...and bind it to the exchange
-		foreach ($this->routingKeys as $routingKey) {
-			$channel->queueBind(
-				$this->consumer->getQueueName(),
-				Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME,
-				$routingKey
-			);
+		if ($this->routingKeys === null) {
+			$metadata = $this->metadataLoader->load();
+
+			if ($metadata->offsetExists($this->origin)) {
+				$moduleMetadata = $metadata->offsetGet($this->origin);
+
+				/** @var Utils\ArrayHash $moduleVersionMetadata */
+				foreach ($moduleMetadata as $moduleVersionMetadata) {
+					if ($moduleVersionMetadata->offsetGet('version') === '*') {
+						/** @var Utils\ArrayHash $moduleGlobalMetadata */
+						$moduleGlobalMetadata = $moduleVersionMetadata->offsetGet('metadata');
+
+						foreach ($moduleGlobalMetadata->offsetGet('exchange') as $routingKey) {
+							$channel->queueBind(
+								$queueName,
+								Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME,
+								$routingKey
+							);
+						}
+					}
+				}
+			}
+
+		} else {
+			foreach ($this->routingKeys as $routingKey) {
+				$channel->queueBind(
+					$queueName,
+					Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME,
+					$routingKey
+				);
+			}
 		}
 
 		$channel->consume(
@@ -214,7 +266,7 @@ final class Exchange
 
 				$this->onAfterConsumeMessage($message);
 			},
-			$this->consumer->getQueueName()
+			$queueName
 		);
 	}
 

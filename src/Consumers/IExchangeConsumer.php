@@ -34,16 +34,16 @@ interface IExchangeConsumer
 	public const MESSAGE_REJECT_AND_TERMINATE = 4;
 
 	/**
-	 * @param string $queueName
+	 * @param string|null $queueName
 	 *
 	 * @return void
 	 */
-	public function setQueueName(string $queueName): void;
+	public function setQueueName(?string $queueName): void;
 
 	/**
-	 * @return string
+	 * @return string|null
 	 */
-	public function getQueueName(): string;
+	public function getQueueName(): ?string;
 
 	/**
 	 * @param IMessageHandler $handler

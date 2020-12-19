@@ -60,24 +60,20 @@ class RabbitMqPluginExtension extends DI\CompilerExtension
 	public function getConfigSchema(): Schema\Schema
 	{
 		return Schema\Expect::structure([
-			'origin'   => Schema\Expect::string()
-				->required(),
+			'origin'   => Schema\Expect::string()->required(),
 			'rabbitMQ' => Schema\Expect::structure([
 				'connection' => Schema\Expect::structure([
-					'host'     => Schema\Expect::string()
-						->default('127.0.0.1'),
+					'host'     => Schema\Expect::string()->default('127.0.0.1'),
 					'port'     => Schema\Expect::int(5672),
 					'vhost'    => Schema\Expect::string('/'),
 					'username' => Schema\Expect::string('guest'),
 					'password' => Schema\Expect::string('guest'),
 				]),
 				'queue'      => Schema\Expect::structure([
-					'name' => Schema\Expect::string()
-						->required(),
+					'name' => Schema\Expect::string()->default(null),
 				]),
 				'routing'    => Schema\Expect::structure([
-					'keys' => Schema\Expect::array([])
-						->items(Schema\Expect::string()),
+					'keys' => Schema\Expect::array([])->items(Schema\Expect::string()),
 				]),
 			]),
 		]);
@@ -102,12 +98,15 @@ class RabbitMqPluginExtension extends DI\CompilerExtension
 				'password' => $configuration->rabbitMQ->connection->password,
 			]);
 
-		$builder->addDefinition(null)
-			->setType(Consumers\ExchangeConsumer::class)
-			->addSetup('?->setQueueName(?)', [
+		$exchange = $builder->addDefinition(null)
+			->setType(Consumers\ExchangeConsumer::class);
+
+		if ($configuration->rabbitMQ->queue->name !== null) {
+			$exchange->addSetup('?->setQueueName(?)', [
 				'@self',
 				$configuration->rabbitMQ->queue->name,
 			]);
+		}
 
 		$builder->addDefinition(null)
 			->setType(Publishers\RabbitMqPublisher::class)
@@ -115,7 +114,10 @@ class RabbitMqPluginExtension extends DI\CompilerExtension
 
 		$builder->addDefinition(null)
 			->setType(RabbitMqPlugin\Exchange::class)
-			->setArgument('routingKeys', $configuration->rabbitMQ->routing->keys);
+			->setArguments([
+				'origin'      => $configuration->origin,
+				'routingKeys' => $configuration->rabbitMQ->routing->keys,
+			]);
 
 		$builder->addDefinition(null)
 			->setType(Commands\ConsumerCommand::class);

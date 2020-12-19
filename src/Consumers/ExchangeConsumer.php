@@ -63,19 +63,15 @@ final class ExchangeConsumer implements IExchangeConsumer
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getQueueName(): string
+	public function getQueueName(): ?string
 	{
-		if ($this->queueName === null) {
-			throw new Exceptions\InvalidStateException('Name of the consumer queue is not set');
-		}
-
 		return $this->queueName;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setQueueName(string $queueName): void
+	public function setQueueName(?string $queueName): void
 	{
 		$this->queueName = $queueName;
 	}

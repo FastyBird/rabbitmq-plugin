@@ -42,9 +42,6 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 		Assert::equal(Consumers\IExchangeConsumer::MESSAGE_REJECT, $consumer->consume($message));
 	}
 
-	/**
-	 * @throws FastyBird\RabbitMqPlugin\Exceptions\InvalidStateException
-	 */
 	public function testNotSetQueueName(): void
 	{
 		$loader = Mockery::mock(ModulesMetadataLoaders\ISchemaLoader::class);
@@ -53,7 +50,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 
 		$consumer = new Consumers\ExchangeConsumer($loader, $validator);
 
-		$consumer->getQueueName();
+		Assert::null($consumer->getQueueName());
 	}
 
 	public function testSetQueueName(): void
