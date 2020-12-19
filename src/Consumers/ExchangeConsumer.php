@@ -22,6 +22,7 @@ use FastyBird\ModulesMetadata\Schemas as ModulesMetadataSchemas;
 use FastyBird\RabbitMqPlugin\Exceptions;
 use Nette;
 use Nette\Utils;
+use Psr\Log;
 use SplObjectStorage;
 use Throwable;
 
@@ -50,14 +51,20 @@ final class ExchangeConsumer implements IExchangeConsumer
 	/** @var ModulesMetadataSchemas\IValidator */
 	private ModulesMetadataSchemas\IValidator $validator;
 
+	/** @var Log\LoggerInterface */
+	private Log\LoggerInterface $logger;
+
 	public function __construct(
 		ModulesMetadataLoaders\ISchemaLoader $schemaLoader,
-		ModulesMetadataSchemas\IValidator $validator
+		ModulesMetadataSchemas\IValidator $validator,
+		?Log\LoggerInterface $logger = null
 	) {
 		$this->schemaLoader = $schemaLoader;
 		$this->validator = $validator;
 
 		$this->handlers = new SplObjectStorage();
+
+		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**
@@ -121,21 +128,25 @@ final class ExchangeConsumer implements IExchangeConsumer
 			return self::MESSAGE_REJECT;
 		}
 
-		// Message process result
-		$result = false;
-
 		/** @var IMessageHandler $handler */
 		foreach ($this->handlers as $handler) {
-			if ($this->processMessage($origin, $routingKey, $data, $handler)) {
-				$result = true;
+			try {
+				$this->processMessage($origin, $routingKey, $data, $handler);
+
+			} catch (Exceptions\UnprocessableMessageException $ex) {
+				// Log error consume reason
+				$this->logger->error('[FB:PLUGIN:RABBITMQ] Message could not be consumed', [
+					'exception' => [
+						'message' => $ex->getMessage(),
+						'code'    => $ex->getCode(),
+					],
+				]);
+
+				return self::MESSAGE_REJECT;
 			}
 		}
 
-		if ($result) {
-			return self::MESSAGE_ACK;
-		}
-
-		return self::MESSAGE_REJECT;
+		return self::MESSAGE_ACK;
 	}
 
 	/**
@@ -164,7 +175,7 @@ final class ExchangeConsumer implements IExchangeConsumer
 			throw new Exceptions\TerminateException($ex->getMessage(), $ex->getCode(), $ex);
 
 		} catch (Throwable $ex) {
-			return false;
+			throw new Exceptions\UnprocessableMessageException('Received message could not be consumed', $ex->getCode(), $ex);
 		}
 	}
 
