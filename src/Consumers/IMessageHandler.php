@@ -15,6 +15,8 @@
 
 namespace FastyBird\RabbitMqPlugin\Consumers;
 
+use Nette\Utils;
+
 /**
  * Exchange messages consumer interface
  *
@@ -29,14 +31,14 @@ interface IMessageHandler
 	/**
 	 * @param string $routingKey
 	 * @param string $origin
-	 * @param string $payload
+	 * @param Utils\ArrayHash $data
 	 *
 	 * @return bool
 	 */
 	public function process(
-		string $routingKey,
 		string $origin,
-		string $payload
+		string $routingKey,
+		Utils\ArrayHash $data
 	): bool;
 
 }

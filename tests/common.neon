@@ -15,6 +15,7 @@ php:
 
 extensions:
 	fbDateTimeFactory	: FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
+	fbModulesMetadata	: FastyBird\ModulesMetadata\DI\ModulesMetadataExtension
 
 fbRabbitMqPlugin:
 	origin: com.fastybird.plugin

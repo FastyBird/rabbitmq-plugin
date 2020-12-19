@@ -42,7 +42,7 @@ final class ConsumerCommandTest extends BaseMockeryTestCase
 			$logger
 		));
 
-		$command = $application->get('fb:consumer:start');
+		$command = $application->get('fb:rabbit-consumer:start');
 
 		$commandTester = new CommandTester($command);
 		$commandTester->execute([]);
@@ -80,7 +80,7 @@ final class ConsumerCommandTest extends BaseMockeryTestCase
 						'message' => $exception->getMessage(),
 						'code'    => $exception->getCode(),
 					],
-					'cmd'       => 'fb:consumer:start',
+					'cmd'       => 'fb:rabbit-consumer:start',
 				],
 			])
 			->times(1);
@@ -91,7 +91,7 @@ final class ConsumerCommandTest extends BaseMockeryTestCase
 			$logger
 		));
 
-		$command = $application->get('fb:consumer:start');
+		$command = $application->get('fb:rabbit-consumer:start');
 
 		$commandTester = new CommandTester($command);
 		$commandTester->execute([]);

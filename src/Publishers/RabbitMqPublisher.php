@@ -22,6 +22,7 @@ use Nette;
 use Nette\Utils;
 use Psr\Log;
 use React\Promise;
+use Throwable;
 
 /**
  * RabbitMQ exchange publisher
@@ -94,8 +95,7 @@ final class RabbitMqPublisher implements IRabbitMqPublisher
 				$message,
 				[
 					'origin'  => $this->origin,
-					'created' => $this->dateTimeFactory->getNow()
-						->format(DATE_ATOM),
+					'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
 				],
 				RabbitMqPlugin\Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME,
 				$routingKey
@@ -144,8 +144,12 @@ final class RabbitMqPublisher implements IRabbitMqPublisher
 							],
 						]);
 					},
-					function () use ($routingKey, $message): void {
+					function (Throwable $ex) use ($routingKey, $message): void {
 						$this->logger->error('[FB:PLUGIN:RABBITMQ] Received message could not be pushed into data exchange', [
+							'exception' => [
+								'message' => $ex->getMessage(),
+								'code'    => $ex->getCode(),
+							],
 							'message' => [
 								'routingKey' => $routingKey,
 								'headers'    => [

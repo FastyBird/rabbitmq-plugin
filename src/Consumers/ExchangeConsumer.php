@@ -16,8 +16,12 @@
 namespace FastyBird\RabbitMqPlugin\Consumers;
 
 use Bunny;
+use FastyBird\ModulesMetadata\Exceptions as ModulesMetadataExceptions;
+use FastyBird\ModulesMetadata\Loaders as ModulesMetadataLoaders;
+use FastyBird\ModulesMetadata\Schemas as ModulesMetadataSchemas;
 use FastyBird\RabbitMqPlugin\Exceptions;
 use Nette;
+use Nette\Utils;
 use SplObjectStorage;
 use Throwable;
 
@@ -40,8 +44,19 @@ final class ExchangeConsumer implements IExchangeConsumer
 	/** @var SplObjectStorage */
 	private SplObjectStorage $handlers;
 
-	public function __construct()
-	{
+	/** @var ModulesMetadataLoaders\ISchemaLoader */
+	private ModulesMetadataLoaders\ISchemaLoader $schemaLoader;
+
+	/** @var ModulesMetadataSchemas\IValidator */
+	private ModulesMetadataSchemas\IValidator $validator;
+
+	public function __construct(
+		ModulesMetadataLoaders\ISchemaLoader $schemaLoader,
+		ModulesMetadataSchemas\IValidator $validator
+	) {
+		$this->schemaLoader = $schemaLoader;
+		$this->validator = $validator;
+
 		$this->handlers = new SplObjectStorage();
 	}
 
@@ -88,7 +103,25 @@ final class ExchangeConsumer implements IExchangeConsumer
 	 */
 	public function consume(Bunny\Message $message): int
 	{
-		if (!$message->hasHeader('origin')) {
+		if (!$message->hasHeader('origin') || !is_string($message->getHeader('origin'))) {
+			return self::MESSAGE_REJECT;
+		}
+
+		$routingKey = $message->routingKey;
+		$origin = $message->getHeader('origin');
+		$payload = $message->content;
+
+		try {
+			$schema = $this->schemaLoader->load($origin, $routingKey);
+
+		} catch (ModulesMetadataExceptions\InvalidArgumentException $ex) {
+			return self::MESSAGE_REJECT;
+		}
+
+		try {
+			$data = $this->validator->validate($payload, $schema);
+
+		} catch (Throwable $ex) {
 			return self::MESSAGE_REJECT;
 		}
 
@@ -97,7 +130,9 @@ final class ExchangeConsumer implements IExchangeConsumer
 
 		/** @var IMessageHandler $handler */
 		foreach ($this->handlers as $handler) {
-			$result = $this->processMessage($message, $handler);
+			if ($this->processMessage($origin, $routingKey, $data, $handler)) {
+				$result = true;
+			}
 		}
 
 		if ($result) {
@@ -108,7 +143,9 @@ final class ExchangeConsumer implements IExchangeConsumer
 	}
 
 	/**
-	 * @param Bunny\Message $message
+	 * @param string $origin
+	 * @param string $routingKey
+	 * @param Utils\ArrayHash $data
 	 * @param IMessageHandler $handler
 	 *
 	 * @return bool
@@ -116,11 +153,13 @@ final class ExchangeConsumer implements IExchangeConsumer
 	 * @throws Exceptions\TerminateException
 	 */
 	private function processMessage(
-		Bunny\Message $message,
+		string $origin,
+		string $routingKey,
+		Utils\ArrayHash $data,
 		IMessageHandler $handler
 	): bool {
 		try {
-			return $handler->process($message->routingKey, $message->getHeader('origin'), $message->content);
+			return $handler->process($origin, $routingKey, $data);
 
 		} catch (Exceptions\TerminateException $ex) {
 			throw $ex;

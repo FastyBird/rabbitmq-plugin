@@ -63,7 +63,7 @@ final class ConsumerCommand extends Console\Command\Command
 		parent::configure();
 
 		$this
-			->setName('fb:consumer:start')
+			->setName('fb:rabbit-consumer:start')
 			->setDescription('Start exchange consumer.');
 	}
 
