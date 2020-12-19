@@ -1,19 +1,19 @@
 <?php declare(strict_types = 1);
 
 /**
- * RabbitMqPublisher.php
+ * Publisher.php
  *
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RabbitMqPlugin!
- * @subpackage     Publishers
+ * @subpackage     Publisher
  * @since          0.1.0
  *
  * @date           08.03.20
  */
 
-namespace FastyBird\RabbitMqPlugin\Publishers;
+namespace FastyBird\RabbitMqPlugin\Publisher;
 
 use FastyBird\DateTimeFactory;
 use FastyBird\RabbitMqPlugin;
@@ -28,11 +28,11 @@ use Throwable;
  * RabbitMQ exchange publisher
  *
  * @package        FastyBird:RabbitMqPlugin!
- * @subpackage     Publishers
+ * @subpackage     Publisher
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class RabbitMqPublisher implements IRabbitMqPublisher
+final class Publisher implements IPublisher
 {
 
 	use Nette\SmartObject;

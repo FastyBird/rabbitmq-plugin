@@ -1,31 +1,32 @@
 <?php declare(strict_types = 1);
 
 /**
- * IExchangeConsumer.php
+ * IConsumer.php
  *
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RabbitMqPlugin!
- * @subpackage     Consumers
+ * @subpackage     Consumer
  * @since          0.1.0
  *
  * @date           08.03.20
  */
 
-namespace FastyBird\RabbitMqPlugin\Consumers;
+namespace FastyBird\RabbitMqPlugin\Consumer;
 
 use Bunny;
+use FastyBird\ApplicationExchange\Consumer as ApplicationExchangeConsumer;
 
 /**
  * Exchange messages consumer interface
  *
  * @package        FastyBird:RabbitMqPlugin!
- * @subpackage     Consumers
+ * @subpackage     Consumer
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface IExchangeConsumer
+interface IConsumer
 {
 
 	public const MESSAGE_ACK = 1;
@@ -46,16 +47,16 @@ interface IExchangeConsumer
 	public function getQueueName(): ?string;
 
 	/**
-	 * @param IMessageHandler $handler
+	 * @param ApplicationExchangeConsumer\IConsumer $consumer
 	 *
 	 * @return void
 	 */
-	public function addHandler(IMessageHandler $handler): void;
+	public function registerConsumer(ApplicationExchangeConsumer\IConsumer $consumer): void;
 
 	/**
 	 * @return bool
 	 */
-	public function hasHandlers(): bool;
+	public function hasConsumers(): bool;
 
 	/**
 	 * @param Bunny\Message $message

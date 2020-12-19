@@ -7,7 +7,7 @@ use DateTimeImmutable;
 use FastyBird\DateTimeFactory;
 use FastyBird\RabbitMqPlugin;
 use FastyBird\RabbitMqPlugin\Connections;
-use FastyBird\RabbitMqPlugin\Publishers;
+use FastyBird\RabbitMqPlugin\Publisher;
 use Mockery;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
 use Psr\Log;
@@ -18,7 +18,7 @@ require_once __DIR__ . '/../../../bootstrap.php';
 /**
  * @testCase
  */
-final class RabbitMqPublisherTest extends BaseMockeryTestCase
+final class PublisherTest extends BaseMockeryTestCase
 {
 
 	public function testPublishMessage(): void
@@ -58,7 +58,7 @@ final class RabbitMqPublisherTest extends BaseMockeryTestCase
 			})
 			->times(1);
 
-		$publisher = new Publishers\RabbitMqPublisher('origin.test', $rabbitMq, $dateFactory, $logger);
+		$publisher = new Publisher\Publisher('origin.test', $rabbitMq, $dateFactory, $logger);
 
 		$publisher->publish('routing.key.path', [
 			'key_one' => 'value_one',
@@ -68,5 +68,5 @@ final class RabbitMqPublisherTest extends BaseMockeryTestCase
 
 }
 
-$test_case = new RabbitMqPublisherTest();
+$test_case = new PublisherTest();
 $test_case->run();

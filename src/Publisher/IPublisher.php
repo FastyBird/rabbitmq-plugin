@@ -1,37 +1,31 @@
 <?php declare(strict_types = 1);
 
 /**
- * IRabbitMqPublisher.php
+ * IPublisher.php
  *
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RabbitMqPlugin!
- * @subpackage     Publishers
+ * @subpackage     Publisher
  * @since          0.1.0
  *
  * @date           08.03.20
  */
 
-namespace FastyBird\RabbitMqPlugin\Publishers;
+namespace FastyBird\RabbitMqPlugin\Publisher;
+
+use FastyBird\ApplicationExchange\Publisher as ApplicationExchangePublisher;
 
 /**
  * RabbitMQ exchange publisher interface
  *
  * @package        FastyBird:RabbitMqPlugin!
- * @subpackage     Publishers
+ * @subpackage     Publisher
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface IRabbitMqPublisher
+interface IPublisher extends ApplicationExchangePublisher\IPublisher
 {
-
-	/**
-	 * @param string $routingKey
-	 * @param mixed[] $data
-	 *
-	 * @return void
-	 */
-	public function publish(string $routingKey, array $data): void;
 
 }

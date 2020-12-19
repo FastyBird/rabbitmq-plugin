@@ -18,7 +18,6 @@ namespace FastyBird\RabbitMqPlugin;
 use Bunny;
 use Closure;
 use FastyBird\ModulesMetadata\Loaders as ModulesMetadataLoaders;
-use FastyBird\RabbitMqPlugin\Exceptions\InvalidStateException;
 use Nette;
 use Nette\Utils;
 use React\Promise;
@@ -61,8 +60,8 @@ final class Exchange
 	/** @var Connections\IRabbitMqConnection */
 	private Connections\IRabbitMqConnection $connection;
 
-	/** @var Consumers\IExchangeConsumer */
-	private Consumers\IExchangeConsumer $consumer;
+	/** @var Consumer\IConsumer */
+	private Consumer\IConsumer $consumer;
 
 	/** @var ModulesMetadataLoaders\IMetadataLoader */
 	private ModulesMetadataLoaders\IMetadataLoader $metadataLoader;
@@ -76,14 +75,14 @@ final class Exchange
 	/**
 	 * @param string $origin
 	 * @param Connections\IRabbitMqConnection $connection
-	 * @param Consumers\IExchangeConsumer $consumer
+	 * @param Consumer\IConsumer $consumer
 	 * @param ModulesMetadataLoaders\IMetadataLoader $metadataLoader
 	 * @param string[] $routingKeys
 	 */
 	public function __construct(
 		string $origin,
 		Connections\IRabbitMqConnection $connection,
-		Consumers\IExchangeConsumer $consumer,
+		Consumer\IConsumer $consumer,
 		ModulesMetadataLoaders\IMetadataLoader $metadataLoader,
 		?array $routingKeys = null
 	) {
@@ -102,8 +101,8 @@ final class Exchange
 	 */
 	public function initialize(): void
 	{
-		if (!$this->consumer->hasHandlers()) {
-			throw new InvalidStateException('No consumer handler registered. Exchange could not be initialized');
+		if (!$this->consumer->hasConsumers()) {
+			throw new Exceptions\InvalidStateException('No consumer handler registered. Exchange could not be initialized');
 		}
 
 		$this->client = $this->connection->getClient();
@@ -122,8 +121,8 @@ final class Exchange
 	 */
 	public function initializeAsync(): void
 	{
-		if (!$this->consumer->hasHandlers()) {
-			throw new InvalidStateException('No consumer handler registered. Exchange could not be initialized');
+		if (!$this->consumer->hasConsumers()) {
+			throw new Exceptions\InvalidStateException('No consumer handler registered. Exchange could not be initialized');
 		}
 
 		$this->asyncClient = $this->connection->getAsyncClient();
@@ -233,19 +232,19 @@ final class Exchange
 				$result = $this->consumer->consume($message);
 
 				switch ($result) {
-					case Consumers\IExchangeConsumer::MESSAGE_ACK:
+					case Consumer\IConsumer::MESSAGE_ACK:
 						$channel->ack($message); // Acknowledge message
 						break;
 
-					case Consumers\IExchangeConsumer::MESSAGE_NACK:
+					case Consumer\IConsumer::MESSAGE_NACK:
 						$channel->nack($message); // Message will be re-queued
 						break;
 
-					case Consumers\IExchangeConsumer::MESSAGE_REJECT:
+					case Consumer\IConsumer::MESSAGE_REJECT:
 						$channel->reject($message, false); // Message will be discarded
 						break;
 
-					case Consumers\IExchangeConsumer::MESSAGE_REJECT_AND_TERMINATE:
+					case Consumer\IConsumer::MESSAGE_REJECT_AND_TERMINATE:
 						$channel->reject($message, false); // Message will be discarded
 
 						if ($client instanceof Bunny\Client || $client instanceof Bunny\Async\Client) {

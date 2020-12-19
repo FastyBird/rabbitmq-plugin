@@ -15,11 +15,12 @@
 
 namespace FastyBird\RabbitMqPlugin\DI;
 
+use FastyBird\ApplicationExchange\Consumer as ApplicationExchangeConsumer;
 use FastyBird\RabbitMqPlugin;
 use FastyBird\RabbitMqPlugin\Commands;
 use FastyBird\RabbitMqPlugin\Connections;
-use FastyBird\RabbitMqPlugin\Consumers;
-use FastyBird\RabbitMqPlugin\Publishers;
+use FastyBird\RabbitMqPlugin\Consumer;
+use FastyBird\RabbitMqPlugin\Publisher;
 use Nette;
 use Nette\DI;
 use Nette\Schema;
@@ -99,7 +100,7 @@ class RabbitMqPluginExtension extends DI\CompilerExtension
 			]);
 
 		$exchange = $builder->addDefinition(null)
-			->setType(Consumers\ExchangeConsumer::class);
+			->setType(Consumer\ConsumerProxy::class);
 
 		if ($configuration->rabbitMQ->queue->name !== null) {
 			$exchange->addSetup('?->setQueueName(?)', [
@@ -109,8 +110,9 @@ class RabbitMqPluginExtension extends DI\CompilerExtension
 		}
 
 		$builder->addDefinition(null)
-			->setType(Publishers\RabbitMqPublisher::class)
-			->setArgument('origin', $configuration->origin);
+			->setType(Publisher\Publisher::class)
+			->setArgument('origin', $configuration->origin)
+			->setAutowired(false);
 
 		$builder->addDefinition(null)
 			->setType(RabbitMqPlugin\Exchange::class)
@@ -132,18 +134,18 @@ class RabbitMqPluginExtension extends DI\CompilerExtension
 
 		$builder = $this->getContainerBuilder();
 
-		/** @var string $messagesConsumerServiceName */
-		$messagesConsumerServiceName = $builder->getByType(Consumers\ExchangeConsumer::class, true);
+		/** @var string $consumerProxyServiceName */
+		$consumerProxyServiceName = $builder->getByType(Consumer\ConsumerProxy::class, true);
 
-		/** @var DI\Definitions\ServiceDefinition $messagesConsumerService */
-		$messagesConsumerService = $builder->getDefinition($messagesConsumerServiceName);
+		/** @var DI\Definitions\ServiceDefinition $consumerProxyService */
+		$consumerProxyService = $builder->getDefinition($consumerProxyServiceName);
 
-		$consumerHandlersServices = $builder->findByType(Consumers\IMessageHandler::class);
+		$consumerServices = $builder->findByType(ApplicationExchangeConsumer\IConsumer::class);
 
-		foreach ($consumerHandlersServices as $consumerHandlersService) {
-			$messagesConsumerService->addSetup('?->addHandler(?)', [
+		foreach ($consumerServices as $consumerService) {
+			$consumerProxyService->addSetup('?->registerConsumer(?)', [
 				'@self',
-				$consumerHandlersService,
+				$consumerService,
 			]);
 		}
 	}

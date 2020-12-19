@@ -3,10 +3,11 @@
 namespace Tests\Cases;
 
 use Bunny;
+use FastyBird\ApplicationExchange\Consumer as ApplicationExchangeConsumer;
 use FastyBird\ModulesMetadata\Exceptions as ModulesMetadataExceptions;
 use FastyBird\ModulesMetadata\Loaders as ModulesMetadataLoaders;
 use FastyBird\ModulesMetadata\Schemas as ModulesMetadataSchemas;
-use FastyBird\RabbitMqPlugin\Consumers;
+use FastyBird\RabbitMqPlugin\Consumer;
 use FastyBird\RabbitMqPlugin\Exceptions;
 use Mockery;
 use Nette\Utils;
@@ -18,7 +19,7 @@ require_once __DIR__ . '/../../../bootstrap.php';
 /**
  * @testCase
  */
-final class ExchangeConsumerTest extends BaseMockeryTestCase
+final class ConsumerTest extends BaseMockeryTestCase
 {
 
 	public function testEmptyHandlers(): void
@@ -27,7 +28,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 
 		$validator = Mockery::mock(ModulesMetadataSchemas\IValidator::class);
 
-		$consumer = new Consumers\ExchangeConsumer($loader, $validator);
+		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator);
 
 		$message = new Bunny\Message(
 			'consumerTag',
@@ -39,7 +40,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			''
 		);
 
-		Assert::equal(Consumers\IExchangeConsumer::MESSAGE_REJECT, $consumer->consume($message));
+		Assert::equal(Consumer\IConsumer::MESSAGE_REJECT, $consumerProxy->consume($message));
 	}
 
 	public function testNotSetQueueName(): void
@@ -48,9 +49,9 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 
 		$validator = Mockery::mock(ModulesMetadataSchemas\IValidator::class);
 
-		$consumer = new Consumers\ExchangeConsumer($loader, $validator);
+		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator);
 
-		Assert::null($consumer->getQueueName());
+		Assert::null($consumerProxy->getQueueName());
 	}
 
 	public function testSetQueueName(): void
@@ -59,17 +60,17 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 
 		$validator = Mockery::mock(ModulesMetadataSchemas\IValidator::class);
 
-		$consumer = new Consumers\ExchangeConsumer($loader, $validator);
+		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator);
 
-		$consumer->setQueueName('queueNameSet');
+		$consumerProxy->setQueueName('queueNameSet');
 
-		Assert::equal('queueNameSet', $consumer->getQueueName());
+		Assert::equal('queueNameSet', $consumerProxy->getQueueName());
 	}
 
 	/**
 	 * @param mixed[] $data
 	 *
-	 * @dataProvider ./../../../fixtures/Consumers/consumeValidMessage.php
+	 * @dataProvider ./../../../fixtures/Consumer/consumeValidMessage.php
 	 */
 	public function testConsumeNoOriginMessage(
 		array $data
@@ -85,11 +86,11 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 
 		$validator = Mockery::mock(ModulesMetadataSchemas\IValidator::class);
 
-		$consumer = new Consumers\ExchangeConsumer($loader, $validator);
+		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator);
 
-		$handler = Mockery::mock(Consumers\IMessageHandler::class);
+		$consumer = Mockery::mock(ApplicationExchangeConsumer\IConsumer::class);
 
-		$consumer->addHandler($handler);
+		$consumerProxy->registerConsumer($consumer);
 
 		$message = new Bunny\Message(
 			'consumerTag',
@@ -101,13 +102,13 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			$body
 		);
 
-		Assert::equal(Consumers\IExchangeConsumer::MESSAGE_REJECT, $consumer->consume($message));
+		Assert::equal(Consumer\IConsumer::MESSAGE_REJECT, $consumerProxy->consume($message));
 	}
 
 	/**
 	 * @param mixed[] $data
 	 *
-	 * @dataProvider ./../../../fixtures/Consumers/consumeValidMessage.php
+	 * @dataProvider ./../../../fixtures/Consumer/consumeValidMessage.php
 	 */
 	public function testConsumeValidOriginMessage(
 		array $data
@@ -134,11 +135,11 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			->andReturn(Utils\ArrayHash::from($data))
 			->getMock();
 
-		$consumer = new Consumers\ExchangeConsumer($loader, $validator);
+		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator);
 
-		$handler = Mockery::mock(Consumers\IMessageHandler::class);
-		$handler
-			->shouldReceive('process')
+		$consumer = Mockery::mock(ApplicationExchangeConsumer\IConsumer::class);
+		$consumer
+			->shouldReceive('consume')
 			->withArgs(function (string $origin, string $routingKey, Utils\ArrayHash $receivedData) use ($data): bool {
 				Assert::same('routing.key.one', $routingKey);
 				Assert::same('test.origin', $origin);
@@ -149,7 +150,7 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			->andReturn(true)
 			->times(1);
 
-		$consumer->addHandler($handler);
+		$consumerProxy->registerConsumer($consumer);
 
 		$message = new Bunny\Message(
 			'consumerTag',
@@ -163,13 +164,13 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			$body
 		);
 
-		Assert::equal(Consumers\IExchangeConsumer::MESSAGE_ACK, $consumer->consume($message));
+		Assert::equal(Consumer\IConsumer::MESSAGE_ACK, $consumerProxy->consume($message));
 	}
 
 	/**
 	 * @param mixed[] $data
 	 *
-	 * @dataProvider ./../../../fixtures/Consumers/consumeValidMessage.php
+	 * @dataProvider ./../../../fixtures/Consumer/consumeValidMessage.php
 	 */
 	public function testConsumeInvalidMessage(
 		array $data
@@ -208,11 +209,11 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			->andReturn(Utils\ArrayHash::from($data))
 			->getMock();
 
-		$consumer = new Consumers\ExchangeConsumer($loader, $validator);
+		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator);
 
-		$handler = Mockery::mock(Consumers\IMessageHandler::class);
-		$handler
-			->shouldReceive('process')
+		$consumer = Mockery::mock(ApplicationExchangeConsumer\IConsumer::class);
+		$consumer
+			->shouldReceive('consume')
 			->withArgs(function (string $origin, string $routingKey, Utils\ArrayHash $receivedData) use ($data): bool {
 				Assert::same('routing.key.one', $routingKey);
 				Assert::same('test.origin', $origin);
@@ -223,9 +224,9 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 			->andThrow(new Exceptions\InvalidStateException('Could not handle message'))
 			->times(1);
 
-		$consumer->addHandler($handler);
+		$consumerProxy->registerConsumer($consumer);
 
-		Assert::equal(Consumers\IExchangeConsumer::MESSAGE_REJECT, $consumer->consume($message));
+		Assert::equal(Consumer\IConsumer::MESSAGE_REJECT, $consumerProxy->consume($message));
 	}
 
 	public function testConsumeUnknownSchema(): void
@@ -250,16 +251,16 @@ final class ExchangeConsumerTest extends BaseMockeryTestCase
 
 		$validator = Mockery::mock(ModulesMetadataSchemas\IValidator::class);
 
-		$consumer = new Consumers\ExchangeConsumer($loader, $validator);
+		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator);
 
-		$handler = Mockery::mock(Consumers\IMessageHandler::class);
+		$consumer = Mockery::mock(ApplicationExchangeConsumer\IConsumer::class);
 
-		$consumer->addHandler($handler);
+		$consumerProxy->registerConsumer($consumer);
 
-		Assert::equal(Consumers\IExchangeConsumer::MESSAGE_REJECT, $consumer->consume($message));
+		Assert::equal(Consumer\IConsumer::MESSAGE_REJECT, $consumerProxy->consume($message));
 	}
 
 }
 
-$test_case = new ExchangeConsumerTest();
+$test_case = new ConsumerTest();
 $test_case->run();

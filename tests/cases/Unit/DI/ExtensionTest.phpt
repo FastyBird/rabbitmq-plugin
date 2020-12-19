@@ -4,8 +4,7 @@ namespace Tests\Cases;
 
 use FastyBird\RabbitMqPlugin;
 use FastyBird\RabbitMqPlugin\Connections;
-use FastyBird\RabbitMqPlugin\Consumers;
-use FastyBird\RabbitMqPlugin\Publishers;
+use FastyBird\RabbitMqPlugin\Consumer;
 use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';
@@ -25,9 +24,7 @@ final class ExtensionTest extends BaseTestCase
 
 		Assert::notNull($container->getByType(Connections\IRabbitMqConnection::class));
 
-		Assert::notNull($container->getByType(Consumers\IExchangeConsumer::class));
-
-		Assert::notNull($container->getByType(Publishers\IRabbitMqPublisher::class));
+		Assert::notNull($container->getByType(Consumer\IConsumer::class));
 	}
 
 }

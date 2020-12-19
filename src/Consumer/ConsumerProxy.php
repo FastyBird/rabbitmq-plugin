@@ -7,15 +7,16 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RabbitMqPlugin!
- * @subpackage     Consumers
+ * @subpackage     Consumer
  * @since          0.1.0
  *
  * @date           08.03.20
  */
 
-namespace FastyBird\RabbitMqPlugin\Consumers;
+namespace FastyBird\RabbitMqPlugin\Consumer;
 
 use Bunny;
+use FastyBird\ApplicationExchange\Consumer as ApplicationExchangeConsumer;
 use FastyBird\ModulesMetadata\Exceptions as ModulesMetadataExceptions;
 use FastyBird\ModulesMetadata\Loaders as ModulesMetadataLoaders;
 use FastyBird\ModulesMetadata\Schemas as ModulesMetadataSchemas;
@@ -30,11 +31,11 @@ use Throwable;
  * Exchange message consumer container
  *
  * @package        FastyBird:RabbitMqPlugin!
- * @subpackage     Consumers
+ * @subpackage     Consumer
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ExchangeConsumer implements IExchangeConsumer
+final class ConsumerProxy implements IConsumer
 {
 
 	use Nette\SmartObject;
@@ -43,7 +44,7 @@ final class ExchangeConsumer implements IExchangeConsumer
 	private ?string $queueName = null;
 
 	/** @var SplObjectStorage */
-	private SplObjectStorage $handlers;
+	private SplObjectStorage $consumers;
 
 	/** @var ModulesMetadataLoaders\ISchemaLoader */
 	private ModulesMetadataLoaders\ISchemaLoader $schemaLoader;
@@ -62,7 +63,7 @@ final class ExchangeConsumer implements IExchangeConsumer
 		$this->schemaLoader = $schemaLoader;
 		$this->validator = $validator;
 
-		$this->handlers = new SplObjectStorage();
+		$this->consumers = new SplObjectStorage();
 
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
@@ -86,17 +87,19 @@ final class ExchangeConsumer implements IExchangeConsumer
 	/**
 	 * {@inheritDoc}
 	 */
-	public function addHandler(IMessageHandler $handler): void
+	public function registerConsumer(ApplicationExchangeConsumer\IConsumer $consumer): void
 	{
-		$this->handlers->attach($handler);
+		if (!$this->consumers->contains($consumer)) {
+			$this->consumers->attach($consumer);
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function hasHandlers(): bool
+	public function hasConsumers(): bool
 	{
-		return $this->handlers->count() > 0;
+		return $this->consumers->count() > 0;
 	}
 
 	/**
@@ -128,10 +131,10 @@ final class ExchangeConsumer implements IExchangeConsumer
 			return self::MESSAGE_REJECT;
 		}
 
-		/** @var IMessageHandler $handler */
-		foreach ($this->handlers as $handler) {
+		/** @var ApplicationExchangeConsumer\IConsumer $consumer */
+		foreach ($this->consumers as $consumer) {
 			try {
-				$this->processMessage($origin, $routingKey, $data, $handler);
+				$this->processMessage($origin, $routingKey, $data, $consumer);
 
 			} catch (Exceptions\UnprocessableMessageException $ex) {
 				// Log error consume reason
@@ -153,9 +156,9 @@ final class ExchangeConsumer implements IExchangeConsumer
 	 * @param string $origin
 	 * @param string $routingKey
 	 * @param Utils\ArrayHash $data
-	 * @param IMessageHandler $handler
+	 * @param ApplicationExchangeConsumer\IConsumer $consumer
 	 *
-	 * @return bool
+	 * @return void
 	 *
 	 * @throws Exceptions\TerminateException
 	 */
@@ -163,10 +166,10 @@ final class ExchangeConsumer implements IExchangeConsumer
 		string $origin,
 		string $routingKey,
 		Utils\ArrayHash $data,
-		IMessageHandler $handler
-	): bool {
+		ApplicationExchangeConsumer\IConsumer $consumer
+	): void {
 		try {
-			return $handler->process($origin, $routingKey, $data);
+			$consumer->consume($origin, $routingKey, $data);
 
 		} catch (Exceptions\TerminateException $ex) {
 			throw $ex;

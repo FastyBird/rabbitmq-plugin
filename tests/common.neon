@@ -14,8 +14,9 @@ php:
 	date.timezone: Europe/Prague
 
 extensions:
-	fbDateTimeFactory	: FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
-	fbModulesMetadata	: FastyBird\ModulesMetadata\DI\ModulesMetadataExtension
+	fbDateTimeFactory		: FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
+	fbApplicationExchange	: FastyBird\ApplicationExchange\DI\ApplicationExchangeExtension
+	fbModulesMetadata		: FastyBird\ModulesMetadata\DI\ModulesMetadataExtension
 
 fbRabbitMqPlugin:
 	origin: com.fastybird.plugin
