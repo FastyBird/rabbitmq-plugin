@@ -12,6 +12,7 @@ use FastyBird\RabbitMqPlugin\Exceptions;
 use Mockery;
 use Nette\Utils;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
+use Symfony\Component\EventDispatcher;
 use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';
@@ -28,7 +29,9 @@ final class ConsumerTest extends BaseMockeryTestCase
 
 		$validator = Mockery::mock(ModulesMetadataSchemas\IValidator::class);
 
-		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator);
+		$dispatcher = Mockery::mock(EventDispatcher\EventDispatcherInterface::class);
+
+		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator, $dispatcher);
 
 		$message = new Bunny\Message(
 			'consumerTag',
@@ -49,7 +52,9 @@ final class ConsumerTest extends BaseMockeryTestCase
 
 		$validator = Mockery::mock(ModulesMetadataSchemas\IValidator::class);
 
-		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator);
+		$dispatcher = Mockery::mock(EventDispatcher\EventDispatcherInterface::class);
+
+		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator, $dispatcher);
 
 		Assert::null($consumerProxy->getQueueName());
 	}
@@ -60,7 +65,9 @@ final class ConsumerTest extends BaseMockeryTestCase
 
 		$validator = Mockery::mock(ModulesMetadataSchemas\IValidator::class);
 
-		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator);
+		$dispatcher = Mockery::mock(EventDispatcher\EventDispatcherInterface::class);
+
+		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator, $dispatcher);
 
 		$consumerProxy->setQueueName('queueNameSet');
 
@@ -86,7 +93,9 @@ final class ConsumerTest extends BaseMockeryTestCase
 
 		$validator = Mockery::mock(ModulesMetadataSchemas\IValidator::class);
 
-		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator);
+		$dispatcher = Mockery::mock(EventDispatcher\EventDispatcherInterface::class);
+
+		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator, $dispatcher);
 
 		$consumer = Mockery::mock(ApplicationExchangeConsumer\IConsumer::class);
 
@@ -135,7 +144,17 @@ final class ConsumerTest extends BaseMockeryTestCase
 			->andReturn(Utils\ArrayHash::from($data))
 			->getMock();
 
-		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator);
+		$validator
+			->shouldReceive('validate')
+			->withArgs([$body, $schema])
+			->andReturn(Utils\ArrayHash::from($data))
+			->getMock();
+
+		$dispatcher = Mockery::mock(EventDispatcher\EventDispatcherInterface::class);
+		$dispatcher
+			->shouldReceive('dispatch');
+
+		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator, $dispatcher);
 
 		$consumer = Mockery::mock(ApplicationExchangeConsumer\IConsumer::class);
 		$consumer
@@ -209,7 +228,11 @@ final class ConsumerTest extends BaseMockeryTestCase
 			->andReturn(Utils\ArrayHash::from($data))
 			->getMock();
 
-		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator);
+		$dispatcher = Mockery::mock(EventDispatcher\EventDispatcherInterface::class);
+		$dispatcher
+			->shouldReceive('dispatch');
+
+		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator, $dispatcher);
 
 		$consumer = Mockery::mock(ApplicationExchangeConsumer\IConsumer::class);
 		$consumer
@@ -251,7 +274,9 @@ final class ConsumerTest extends BaseMockeryTestCase
 
 		$validator = Mockery::mock(ModulesMetadataSchemas\IValidator::class);
 
-		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator);
+		$dispatcher = Mockery::mock(EventDispatcher\EventDispatcherInterface::class);
+
+		$consumerProxy = new Consumer\ConsumerProxy($loader, $validator, $dispatcher);
 
 		$consumer = Mockery::mock(ApplicationExchangeConsumer\IConsumer::class);
 

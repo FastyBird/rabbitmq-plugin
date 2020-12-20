@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ExchangeConsumer.php
+ * ConsumerProxy.php
  *
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
@@ -17,6 +17,7 @@ namespace FastyBird\RabbitMqPlugin\Consumer;
 
 use Bunny;
 use FastyBird\ApplicationExchange\Consumer as ApplicationExchangeConsumer;
+use FastyBird\ApplicationExchange\Events as ApplicationExchangeEvents;
 use FastyBird\ModulesMetadata\Exceptions as ModulesMetadataExceptions;
 use FastyBird\ModulesMetadata\Loaders as ModulesMetadataLoaders;
 use FastyBird\ModulesMetadata\Schemas as ModulesMetadataSchemas;
@@ -25,10 +26,11 @@ use Nette;
 use Nette\Utils;
 use Psr\Log;
 use SplObjectStorage;
+use Symfony\Contracts\EventDispatcher;
 use Throwable;
 
 /**
- * Exchange message consumer container
+ * Exchange message consumer proxy
  *
  * @package        FastyBird:RabbitMqPlugin!
  * @subpackage     Consumer
@@ -52,16 +54,22 @@ final class ConsumerProxy implements IConsumer
 	/** @var ModulesMetadataSchemas\IValidator */
 	private ModulesMetadataSchemas\IValidator $validator;
 
+	/** @var EventDispatcher\EventDispatcherInterface */
+	private $dispatcher;
+
 	/** @var Log\LoggerInterface */
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
 		ModulesMetadataLoaders\ISchemaLoader $schemaLoader,
 		ModulesMetadataSchemas\IValidator $validator,
+		EventDispatcher\EventDispatcherInterface $dispatcher,
 		?Log\LoggerInterface $logger = null
 	) {
 		$this->schemaLoader = $schemaLoader;
 		$this->validator = $validator;
+
+		$this->dispatcher = $dispatcher;
 
 		$this->consumers = new SplObjectStorage();
 
@@ -148,6 +156,8 @@ final class ConsumerProxy implements IConsumer
 				return self::MESSAGE_REJECT;
 			}
 		}
+
+		$this->dispatcher->dispatch(new ApplicationExchangeEvents\MessageConsumedEvent($origin, $routingKey, $data));
 
 		return self::MESSAGE_ACK;
 	}
