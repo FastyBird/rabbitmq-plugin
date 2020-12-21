@@ -89,7 +89,7 @@ class RabbitMqPluginExtension extends DI\CompilerExtension
 		/** @var stdClass $configuration */
 		$configuration = $this->getConfig();
 
-		$builder->addDefinition(null)
+		$builder->addDefinition($this->prefix('connection'))
 			->setType(Connections\RabbitMqConnection::class)
 			->setArguments([
 				'host'     => $configuration->rabbitMQ->connection->host,
@@ -99,7 +99,7 @@ class RabbitMqPluginExtension extends DI\CompilerExtension
 				'password' => $configuration->rabbitMQ->connection->password,
 			]);
 
-		$exchange = $builder->addDefinition(null)
+		$exchange = $builder->addDefinition($this->prefix('consumer'))
 			->setType(Consumer\ConsumerProxy::class);
 
 		if ($configuration->rabbitMQ->queue->name !== null) {
@@ -109,19 +109,19 @@ class RabbitMqPluginExtension extends DI\CompilerExtension
 			]);
 		}
 
-		$builder->addDefinition(null)
+		$builder->addDefinition($this->prefix('publisher'))
 			->setType(Publisher\Publisher::class)
 			->setArgument('origin', $configuration->origin)
 			->setAutowired(false);
 
-		$builder->addDefinition(null)
+		$builder->addDefinition($this->prefix('exchange'))
 			->setType(RabbitMqPlugin\Exchange::class)
 			->setArguments([
 				'origin'      => $configuration->origin,
 				'routingKeys' => $configuration->rabbitMQ->routing->keys,
 			]);
 
-		$builder->addDefinition(null)
+		$builder->addDefinition($this->prefix('commands.consume'))
 			->setType(Commands\ConsumerCommand::class);
 	}
 

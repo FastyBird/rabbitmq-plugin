@@ -38,7 +38,7 @@
     "bunny/bunny": "^0.4",
     "contributte/console": "^0.8",
     "fastybird/application-exchange": "@dev",
-    "fastybird/datetime-factory": "@dev",
+    "fastybird/datetime-factory": "^0.1",
     "fastybird/modules-metadata": "@dev",
     "nette/bootstrap": "^3.0",
     "nette/di": "^3.0",
