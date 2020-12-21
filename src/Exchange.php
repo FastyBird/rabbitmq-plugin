@@ -20,6 +20,7 @@ use Closure;
 use FastyBird\ModulesMetadata\Loaders as ModulesMetadataLoaders;
 use Nette;
 use Nette\Utils;
+use Psr\Log;
 use React\Promise;
 use Throwable;
 
@@ -72,11 +73,15 @@ final class Exchange
 	/** @var Bunny\Async\Client|null */
 	private ?Bunny\Async\Client $asyncClient = null;
 
+	/** @var Log\LoggerInterface */
+	private Log\LoggerInterface $logger;
+
 	/**
 	 * @param string $origin
 	 * @param Connections\IRabbitMqConnection $connection
 	 * @param Consumer\IConsumer $consumer
 	 * @param ModulesMetadataLoaders\IMetadataLoader $metadataLoader
+	 * @param Log\LoggerInterface|null $logger
 	 * @param string[] $routingKeys
 	 */
 	public function __construct(
@@ -84,6 +89,7 @@ final class Exchange
 		Connections\IRabbitMqConnection $connection,
 		Consumer\IConsumer $consumer,
 		ModulesMetadataLoaders\IMetadataLoader $metadataLoader,
+		?Log\LoggerInterface $logger = null,
 		?array $routingKeys = null
 	) {
 		$this->origin = $origin;
@@ -92,6 +98,8 @@ final class Exchange
 		$this->consumer = $consumer;
 
 		$this->metadataLoader = $metadataLoader;
+
+		$this->logger = $logger ?? new Log\NullLogger();
 
 		$this->routingKeys = $routingKeys;
 	}
@@ -102,7 +110,9 @@ final class Exchange
 	public function initialize(): void
 	{
 		if (!$this->consumer->hasConsumers()) {
-			throw new Exceptions\InvalidStateException('No consumer handler registered. Exchange could not be initialized');
+			$this->logger->warning('[FB:PLUGIN:RABBITMQ] No consumer handler registered. Exchange could not be initialized');
+
+			return;
 		}
 
 		$this->client = $this->connection->getClient();
@@ -122,7 +132,9 @@ final class Exchange
 	public function initializeAsync(): void
 	{
 		if (!$this->consumer->hasConsumers()) {
-			throw new Exceptions\InvalidStateException('No consumer handler registered. Exchange could not be initialized');
+			$this->logger->warning('[FB:PLUGIN:RABBITMQ] No consumer handler registered. Exchange could not be initialized');
+
+			return;
 		}
 
 		$this->asyncClient = $this->connection->getAsyncClient();
