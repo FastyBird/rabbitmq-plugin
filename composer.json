@@ -37,6 +37,7 @@
     "php": ">=7.4.0",
     "bunny/bunny": "^0.4",
     "contributte/console": "^0.8",
+    "fastybird/application-events": "@dev",
     "fastybird/application-exchange": "@dev",
     "fastybird/datetime-factory": "^0.1",
     "fastybird/modules-metadata": "@dev",

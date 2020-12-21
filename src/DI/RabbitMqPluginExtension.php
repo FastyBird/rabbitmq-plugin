@@ -21,6 +21,7 @@ use FastyBird\RabbitMqPlugin\Commands;
 use FastyBird\RabbitMqPlugin\Connections;
 use FastyBird\RabbitMqPlugin\Consumer;
 use FastyBird\RabbitMqPlugin\Publisher;
+use FastyBird\RabbitMqPlugin\Subscribers;
 use Nette;
 use Nette\DI;
 use Nette\Schema;
@@ -123,6 +124,9 @@ class RabbitMqPluginExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('commands.consume'))
 			->setType(Commands\ConsumerCommand::class);
+
+		$builder->addDefinition($this->prefix('subscribers.initialize'))
+			->setType(Subscribers\InitializeSubscriber::class);
 	}
 
 	/**
