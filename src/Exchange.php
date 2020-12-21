@@ -109,12 +109,6 @@ final class Exchange
 	 */
 	public function initialize(): void
 	{
-		if (!$this->consumer->hasConsumers()) {
-			$this->logger->warning('[FB:PLUGIN:RABBITMQ] No consumer handler registered. Exchange could not be initialized');
-
-			return;
-		}
-
 		$this->client = $this->connection->getClient();
 
 		$channel = $this->connection->getChannel();
@@ -131,12 +125,6 @@ final class Exchange
 	 */
 	public function initializeAsync(): void
 	{
-		if (!$this->consumer->hasConsumers()) {
-			$this->logger->warning('[FB:PLUGIN:RABBITMQ] No consumer handler registered. Exchange could not be initialized');
-
-			return;
-		}
-
 		$this->asyncClient = $this->connection->getAsyncClient();
 
 		$promise = $this->asyncClient

@@ -104,14 +104,6 @@ final class ConsumerProxy implements IConsumer
 
 	/**
 	 * {@inheritDoc}
-	 */
-	public function hasConsumers(): bool
-	{
-		return $this->consumers->count() > 0;
-	}
-
-	/**
-	 * {@inheritDoc}
 	 *
 	 * @throws Exceptions\TerminateException
 	 */

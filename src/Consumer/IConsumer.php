@@ -54,11 +54,6 @@ interface IConsumer
 	public function registerConsumer(ApplicationExchangeConsumer\IConsumer $consumer): void;
 
 	/**
-	 * @return bool
-	 */
-	public function hasConsumers(): bool;
-
-	/**
 	 * @param Bunny\Message $message
 	 *
 	 * @return int
