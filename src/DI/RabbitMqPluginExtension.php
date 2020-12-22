@@ -75,7 +75,7 @@ class RabbitMqPluginExtension extends DI\CompilerExtension
 					'name' => Schema\Expect::string()->default(null),
 				]),
 				'routing'    => Schema\Expect::structure([
-					'keys' => Schema\Expect::array([])->items(Schema\Expect::string()),
+					'keys' => Schema\Expect::array([])->items(Schema\Expect::string())->default(null),
 				]),
 			]),
 		]);
