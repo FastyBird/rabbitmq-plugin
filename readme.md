@@ -1,6 +1,6 @@
 # FastyBird Rabbit MQ plugin
 
-[![Build Status](https://badgen.net/github/checks/FastyBird/rabbitmq-plugin/master?cache=300&style=flast-square)](https://travis-ci.com/FastyBird/rabbitmq-plugin)
+[![Build Status](https://badgen.net/github/checks/FastyBird/rabbitmq-plugin/master?cache=300&style=flast-square)](https://github.com/FastyBird/rabbitmq-plugin/actions)
 [![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/rabbitmq-plugin?cache=300&style=flast-square)](https://coveralls.io/r/FastyBird/rabbitmq-plugin)
 ![PHP](https://badgen.net/packagist/php/FastyBird/rabbitmq-plugin?cache=300&style=flast-square)
 [![Licence](https://badgen.net/packagist/license/FastyBird/rabbitmq-plugin?cache=300&style=flast-square)](https://packagist.org/packages/FastyBird/rabbitmq-plugin)
