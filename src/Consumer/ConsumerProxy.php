@@ -45,7 +45,7 @@ final class ConsumerProxy implements IConsumer
 	/** @var string|null */
 	private ?string $queueName = null;
 
-	/** @var SplObjectStorage */
+	/** @var SplObjectStorage<ApplicationExchangeConsumer\IConsumer, null> */
 	private SplObjectStorage $consumers;
 
 	/** @var ModulesMetadataLoaders\ISchemaLoader */
