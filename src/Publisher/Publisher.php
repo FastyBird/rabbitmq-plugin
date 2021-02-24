@@ -37,9 +37,6 @@ final class Publisher implements IPublisher
 
 	use Nette\SmartObject;
 
-	/** @var string */
-	private string $origin;
-
 	/** @var Connections\IRabbitMqConnection */
 	private Connections\IRabbitMqConnection $connection;
 
@@ -50,13 +47,10 @@ final class Publisher implements IPublisher
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		string $origin,
 		Connections\IRabbitMqConnection $connection,
 		DateTimeFactory\DateTimeFactory $dateTimeFactory,
 		?Log\LoggerInterface $logger = null
 	) {
-		$this->origin = $origin;
-
 		$this->connection = $connection;
 		$this->dateTimeFactory = $dateTimeFactory;
 		$this->logger = $logger ?? new Log\NullLogger();
@@ -66,6 +60,7 @@ final class Publisher implements IPublisher
 	 * {@inheritDoc}
 	 */
 	public function publish(
+		string $origin,
 		string $routingKey,
 		array $data
 	): void {
@@ -78,7 +73,7 @@ final class Publisher implements IPublisher
 				'message'   => [
 					'routingKey' => $routingKey,
 					'headers'    => [
-						'origin' => $this->origin,
+						'origin' => $origin,
 					],
 				],
 				'exception' => [
@@ -94,7 +89,7 @@ final class Publisher implements IPublisher
 			->publish(
 				$message,
 				[
-					'origin'  => $this->origin,
+					'origin'  => $origin,
 					'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
 				],
 				RabbitMqPlugin\Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME,
@@ -107,7 +102,7 @@ final class Publisher implements IPublisher
 					'message' => [
 						'routingKey' => $routingKey,
 						'headers'    => [
-							'origin'  => $this->origin,
+							'origin'  => $origin,
 							'created' => $this->dateTimeFactory->getNow()
 								->format(DATE_ATOM),
 						],
@@ -119,7 +114,7 @@ final class Publisher implements IPublisher
 					'message' => [
 						'routingKey' => $routingKey,
 						'headers'    => [
-							'origin'  => $this->origin,
+							'origin'  => $origin,
 							'created' => $this->dateTimeFactory->getNow()
 								->format(DATE_ATOM),
 						],
@@ -131,12 +126,12 @@ final class Publisher implements IPublisher
 		} elseif ($result instanceof Promise\PromiseInterface) {
 			$result
 				->then(
-					function () use ($routingKey, $message): void {
+					function () use ($origin, $routingKey, $message): void {
 						$this->logger->info('[FB:PLUGIN:RABBITMQ] Received message was pushed into data exchange', [
 							'message' => [
 								'routingKey' => $routingKey,
 								'headers'    => [
-									'origin'  => $this->origin,
+									'origin'  => $origin,
 									'created' => $this->dateTimeFactory->getNow()
 										->format(DATE_ATOM),
 								],
@@ -144,7 +139,7 @@ final class Publisher implements IPublisher
 							],
 						]);
 					},
-					function (Throwable $ex) use ($routingKey, $message): void {
+					function (Throwable $ex) use ($origin, $routingKey, $message): void {
 						$this->logger->error('[FB:PLUGIN:RABBITMQ] Received message could not be pushed into data exchange', [
 							'exception' => [
 								'message' => $ex->getMessage(),
@@ -153,7 +148,7 @@ final class Publisher implements IPublisher
 							'message' => [
 								'routingKey' => $routingKey,
 								'headers'    => [
-									'origin'  => $this->origin,
+									'origin'  => $origin,
 									'created' => $this->dateTimeFactory->getNow()
 										->format(DATE_ATOM),
 								],

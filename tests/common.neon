@@ -20,7 +20,8 @@ extensions:
 	fbModulesMetadata		: FastyBird\ModulesMetadata\DI\ModulesMetadataExtension
 
 fbRabbitMqPlugin:
-	origin: com.fastybird.plugin
+	origins:
+		- com.fastybird.plugin
 	rabbitMQ:
 		queue:
 			name: testingQueueName

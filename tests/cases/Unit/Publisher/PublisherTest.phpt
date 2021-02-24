@@ -58,9 +58,9 @@ final class PublisherTest extends BaseMockeryTestCase
 			})
 			->times(1);
 
-		$publisher = new Publisher\Publisher('origin.test', $rabbitMq, $dateFactory, $logger);
+		$publisher = new Publisher\Publisher($rabbitMq, $dateFactory, $logger);
 
-		$publisher->publish('routing.key.path', [
+		$publisher->publish('origin.test', 'routing.key.path', [
 			'key_one' => 'value_one',
 			'key_two' => 'value_two',
 		]);

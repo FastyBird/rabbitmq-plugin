@@ -49,8 +49,8 @@ final class Exchange
 	/** @var Closure[] */
 	public array $onAfterConsumeMessage = [];
 
-	/** @var string */
-	private string $origin;
+	/** @var string[] */
+	private array $origins;
 
 	/** @var string[]|null */
 	private ?array $routingKeys;
@@ -77,7 +77,7 @@ final class Exchange
 	private Log\LoggerInterface $logger;
 
 	/**
-	 * @param string $origin
+	 * @param string[] $origins
 	 * @param Connections\IRabbitMqConnection $connection
 	 * @param Consumer\IConsumer $consumer
 	 * @param ModulesMetadataLoaders\IMetadataLoader $metadataLoader
@@ -85,14 +85,14 @@ final class Exchange
 	 * @param string[] $routingKeys
 	 */
 	public function __construct(
-		string $origin,
+		array $origins,
 		Connections\IRabbitMqConnection $connection,
 		Consumer\IConsumer $consumer,
 		ModulesMetadataLoaders\IMetadataLoader $metadataLoader,
 		?Log\LoggerInterface $logger = null,
 		?array $routingKeys = null
 	) {
-		$this->origin = $origin;
+		$this->origins = $origins;
 
 		$this->connection = $connection;
 		$this->consumer = $consumer;
@@ -167,7 +167,7 @@ final class Exchange
 		$queueName = $this->consumer->getQueueName();
 
 		if ($queueName === null) {
-			$queueName = 'rabbit.plugin_' . $this->origin;
+			$queueName = 'rabbit.plugin_' . Utils\Random::generate();
 
 			$autoDeleteQueue = true;
 		}
@@ -195,21 +195,23 @@ final class Exchange
 		if ($this->routingKeys === null) {
 			$metadata = $this->metadataLoader->load();
 
-			if ($metadata->offsetExists($this->origin)) {
-				$moduleMetadata = $metadata->offsetGet($this->origin);
+			foreach ($this->origins as $origin) {
+				if ($metadata->offsetExists($origin)) {
+					$moduleMetadata = $metadata->offsetGet($origin);
 
-				/** @var Utils\ArrayHash $moduleVersionMetadata */
-				foreach ($moduleMetadata as $moduleVersionMetadata) {
-					if ($moduleVersionMetadata->offsetGet('version') === '*') {
-						/** @var Utils\ArrayHash $moduleGlobalMetadata */
-						$moduleGlobalMetadata = $moduleVersionMetadata->offsetGet('metadata');
+					/** @var Utils\ArrayHash $moduleVersionMetadata */
+					foreach ($moduleMetadata as $moduleVersionMetadata) {
+						if ($moduleVersionMetadata->offsetGet('version') === '*') {
+							/** @var Utils\ArrayHash $moduleGlobalMetadata */
+							$moduleGlobalMetadata = $moduleVersionMetadata->offsetGet('metadata');
 
-						foreach ($moduleGlobalMetadata->offsetGet('exchange') as $routingKey) {
-							$channel->queueBind(
-								$queueName,
-								Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME,
-								$routingKey
-							);
+							foreach ($moduleGlobalMetadata->offsetGet('exchange') as $routingKey) {
+								$channel->queueBind(
+									$queueName,
+									Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME,
+									$routingKey
+								);
+							}
 						}
 					}
 				}

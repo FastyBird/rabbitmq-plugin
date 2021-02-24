@@ -62,7 +62,7 @@ class RabbitMqPluginExtension extends DI\CompilerExtension
 	public function getConfigSchema(): Schema\Schema
 	{
 		return Schema\Expect::structure([
-			'origin'   => Schema\Expect::string()->required(),
+			'origins'  => Schema\Expect::array([])->items(Schema\Expect::string())->default([]),
 			'rabbitMQ' => Schema\Expect::structure([
 				'connection' => Schema\Expect::structure([
 					'host'     => Schema\Expect::string()->default('127.0.0.1'),
@@ -112,13 +112,12 @@ class RabbitMqPluginExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('publisher'))
 			->setType(Publisher\Publisher::class)
-			->setArgument('origin', $configuration->origin)
 			->setAutowired(false);
 
 		$builder->addDefinition($this->prefix('exchange'))
 			->setType(RabbitMqPlugin\Exchange::class)
 			->setArguments([
-				'origin'      => $configuration->origin,
+				'origins'     => $configuration->origins,
 				'routingKeys' => $configuration->rabbitMQ->routing->keys,
 			]);
 
