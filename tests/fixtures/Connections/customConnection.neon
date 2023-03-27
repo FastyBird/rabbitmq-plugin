@@ -1,17 +1,16 @@
 #
-# Rabbit MQ plugin DI configuration
+# Plugin DI configuration
 #
-# @license		More in license.md
-# @copyright	https://www.fastybird.com
-# @author		Adam Kadlec <adam.kadlec@fastybird.com>
-# @package		FastyBird:RabbitMqPlugin!
-# @subpackage	config
-# @since		0.1.0
+# @license       More in LICENSE.md
+# @copyright     https://www.fastybird.com
+# @author        Adam Kadlec <adam.kadlec@fastybird.com>
+# @package       FastyBird:RabbitMqPlugin!
+# @subpackage    config
+# @since         1.0.0
 #
-# @date			19.07.20
+# @date          19.07.20
 
 fbRabbitMqPlugin:
-	rabbitMQ:
-		connection:
-			host: rabbitmq.loc
-			port: 1234
+    client:
+        host: rabbitmq.loc
+        port: 1234

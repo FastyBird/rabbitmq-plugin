@@ -1,4 +1,4 @@
 .idea
 /vendor
-/composer.lock
-tests/*/output
+composer.lock
+.DS_Store

@@ -1,27 +1,31 @@
 #
-# Rabbit MQ plugin DI configuration
+# Plugin DI configuration
 #
-# @license		More in license.md
-# @copyright	https://www.fastybird.com
-# @author		Adam Kadlec <adam.kadlec@fastybird.com>
-# @package		FastyBird:RabbitMqPlugin!
-# @subpackage	config
-# @since		0.1.0
+# @license       More in LICENSE.md
+# @copyright     https://www.fastybird.com
+# @author        Adam Kadlec <adam.kadlec@fastybird.com>
+# @package       FastyBird:RabbitMqPlugin!
+# @subpackage    config
+# @since         1.0.0
 #
-# @date			19.07.20
+# @date          19.07.20
 
 php:
-	date.timezone: Europe/Prague
+    date.timezone: Europe/Prague
 
 extensions:
-	contributeEvents		: Contributte\EventDispatcher\DI\EventDispatcherExtension
-	fbDateTimeFactory		: FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
-	fbApplicationExchange	: FastyBird\ApplicationExchange\DI\ApplicationExchangeExtension
-	fbModulesMetadata		: FastyBird\ModulesMetadata\DI\ModulesMetadataExtension
+    ipubPhone               : IPub\Phone\DI\PhoneExtension
+    fbDateTimeFactory       : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
+    fbBootstrapLibrary      : FastyBird\Library\Bootstrap\DI\BootstrapExtension
+    fbMetadataLibrary       : FastyBird\Library\Metadata\DI\MetadataExtension
+    fbExchangeLibrary       : FastyBird\Library\Exchange\DI\ExchangeExtension
+
+services:
+    - {
+      create: React\EventLoop\Factory::create()
+      type: React\EventLoop\LoopInterface
+    }
 
 fbRabbitMqPlugin:
-	origins:
-		- com.fastybird.plugin
-	rabbitMQ:
-		queue:
-			name: testingQueueName
+    queue:
+        name: testingQueueName
