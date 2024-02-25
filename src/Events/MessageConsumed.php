@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * MessageReceived.php
+ * MessageConsumed.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Events
  * @since          1.0.0
  *
- * @date           27.03.23
+ * @date           15.02.24
  */
 
 namespace FastyBird\Plugin\RabbitMq\Events;
@@ -20,14 +20,14 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Symfony\Contracts\EventDispatcher;
 
 /**
- * Message was received with all required parameters
+ * Message was consumed by consumer
  *
  * @package        FastyBird:RabbitMqPlugin!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class MessageReceived extends EventDispatcher\Event
+class MessageConsumed extends EventDispatcher\Event
 {
 
 	public function __construct(
